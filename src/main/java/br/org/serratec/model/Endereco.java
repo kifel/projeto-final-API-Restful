@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Endereco {
@@ -12,13 +14,30 @@ public class Endereco {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_endereco")
 	private Long idEndereco;
+
+	@NotNull
+	@Size(max = 9)
 	private String cep;
+
+	@NotNull
+	@Size(max = 100)
 	private String logradouro;
+
+	@Size(max = 20)
 	private String complemento;
+
+	@NotNull
+	@Size(max = 50)
 	private String bairro;
+
+	@NotNull
+	private Integer numero;
+
+	@Size(max = 20)
 	private String localidade;
+
+	@Size(max = 2)
 	private String uf;
-	private Integer ibge;
 
 	public Long getIdEndereco() {
 		return idEndereco;
@@ -60,6 +79,14 @@ public class Endereco {
 		this.bairro = bairro;
 	}
 
+	public Integer getNumero() {
+		return numero;
+	}
+
+	public void setNumero(Integer numero) {
+		this.numero = numero;
+	}
+
 	public String getLocalidade() {
 		return localidade;
 	}
@@ -74,14 +101,6 @@ public class Endereco {
 
 	public void setUf(String uf) {
 		this.uf = uf;
-	}
-
-	public Integer getIbge() {
-		return ibge;
-	}
-
-	public void setIbge(Integer ibge) {
-		this.ibge = ibge;
 	}
 
 }
