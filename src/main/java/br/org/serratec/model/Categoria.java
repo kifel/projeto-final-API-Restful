@@ -1,7 +1,5 @@
 package br.org.serratec.model;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,19 +13,17 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class Pedido {
+public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idCategoria;
 
-    @NotNull
-    private Date datePedido;
+    @Size(max = 30)
+    @NotNull(message = "Insira o nome da categoria.")
+    private String nomeCategoria;
 
-    private Date dataEntrega;
+    @Size(max = 150)
+    private String descricaoCategoria;
 
-    private Date dateEnvio;
-
-    @Size(max = 20)
-    private String status;
 }

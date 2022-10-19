@@ -17,9 +17,9 @@ public class ClienteDTO {
 
     public ClienteDTO(Cliente cliente) {
         this.id = cliente.getIdCliente();
-        this.nome = cliente.getNome();
+        this.nome = cliente.getNomeCompleto();
         this.email = cliente.getEmail();
         this.cpf = cliente.getCpf();
     }
-    
+
 }
