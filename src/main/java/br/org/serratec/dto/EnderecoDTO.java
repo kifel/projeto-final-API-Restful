@@ -9,21 +9,22 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class EnderecoDTO {
-
+    
     private String cep;
     private String logradouro;
     private String complemento;
     private String bairro;
-    private String localidade;
-    private String uf;
+    private String cidade;
+    private String estado;
+    private Integer numero;
 
     public EnderecoDTO(Endereco endereco) {
         this.cep = endereco.getCep();
         this.logradouro = endereco.getLogradouro();
         this.complemento = endereco.getComplemento();
         this.bairro = endereco.getBairro();
-        this.localidade = endereco.getLocalidade();
-        this.uf = endereco.getUf();
+        this.cidade = endereco.getLocalidade();
+        this.estado = endereco.getUf();
+        this.numero = endereco.getNumero();
     }
-
 }

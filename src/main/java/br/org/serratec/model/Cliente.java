@@ -1,6 +1,7 @@
 package br.org.serratec.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,11 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.br.CPF;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Cliente {
@@ -53,17 +57,15 @@ public class Cliente {
 	private String telefone;
 
 	@NotNull(message = "Insira a data de nascimento.")
-	private Date dataNascimento;
+	private LocalDate dataNascimento;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_endereco")
 	private Endereco endereco;
 
-	@Override
-	public String toString() {
-		return "Id:" + idCliente + "\n" + "Nome Completo:" + nomeCompleto + "Email:" + email + "\n" + "CPF:" + cpf
-				+ "\n" + "Telefone:" + telefone + "\n" + "Data de Nascimento:" + dataNascimento;
-	}
+	@JsonManagedReference
+	@OneToMany(mappedBy = "cliente")
+	private List<Pedido> pedido;
 
 	public Long getIdCliente() {
 		return idCliente;
@@ -73,7 +75,7 @@ public class Cliente {
 		this.idCliente = idCliente;
 	}
 
-	public String getnNomeUsuario() {
+	public String getNomeUsuario() {
 		return nomeUsuario;
 	}
 
@@ -121,12 +123,34 @@ public class Cliente {
 		this.telefone = telefone;
 	}
 
-	public Date getDataNascimento() {
+	public LocalDate getDataNascimento() {
 		return dataNascimento;
 	}
 
-	public void setDataNascimento(Date dataNascimento) {
+	public void setDataNascimento(LocalDate dataNascimento) {
 		this.dataNascimento = dataNascimento;
+	}
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
+	}
+
+	public List<Pedido> getPedido() {
+		return pedido;
+	}
+
+	public void setPedido(List<Pedido> pedido) {
+		this.pedido = pedido;
+	}
+
+	@Override
+	public String toString() {
+		return "Id:" + idCliente + "\n" + "Nome Completo:" + nomeCompleto + "Email:" + email + "\n" + "CPF:" + cpf
+				+ "\n" + "Telefone:" + telefone + "\n" + "Data de Nascimento:" + dataNascimento;
 	}
 
 }
