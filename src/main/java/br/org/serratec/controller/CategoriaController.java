@@ -15,35 +15,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.org.serratec.dto.ClienteDTO;
-import br.org.serratec.service.ClienteService;
+import br.org.serratec.dto.CategoriaDTO;
+import br.org.serratec.service.CategoriaService;
 
 @RestController
-@RequestMapping("/clientes")
-public class ClienteController {
+@RequestMapping("/categorias")
+public class CategoriaController {
     
     @Autowired
-    private ClienteService service;
+    private CategoriaService service;
 
     @GetMapping
-	public ResponseEntity<List<ClienteDTO>> listarTodos(){		
+	public ResponseEntity<List<CategoriaDTO>> listarTodos(){		
 		return ResponseEntity.ok(service.listarTodos());
 	}
 	
     @GetMapping("/{id}")
-	public ResponseEntity<Optional<ClienteDTO>> listarPorId(@PathVariable Long id){
+	public ResponseEntity<Optional<CategoriaDTO>> listarPorId(@PathVariable Long id){
 		return ResponseEntity.ok(service.listarPorId(id));
 	}
 
     @PostMapping
-	public ResponseEntity<ClienteDTO> cadastrar(@RequestBody ClienteDTO cliente) {
-		ClienteDTO dto = service.cadastrar(cliente);
+	public ResponseEntity<CategoriaDTO> cadastrar(@RequestBody CategoriaDTO categoria) {
+		CategoriaDTO dto = service.cadastrar(categoria);
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 
     @PutMapping("/{id}")
-	public ResponseEntity<ClienteDTO> atualizar(@PathVariable Long id, @RequestBody ClienteDTO cliente) {
-		ClienteDTO dto = service.atualizar(id, cliente);		
+	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @RequestBody CategoriaDTO categoria) {
+		CategoriaDTO dto = service.atualizar(id, categoria);		
 		return ResponseEntity.ok(dto);
 	}
 
