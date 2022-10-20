@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PedidoDTO {
     
+	private Long id;
     private LocalDate dataPedido;
     private LocalDate dataEnvio;
     private LocalDate dataEntrega;
@@ -19,6 +20,7 @@ public class PedidoDTO {
     private ClienteDTO cliente;
 
     public PedidoDTO(Pedido pedido) {
+    	this.id = pedido.getId();
         this.dataPedido = pedido.getDataPedido();
         this.dataEnvio = pedido.getDataEnvio();
         this.dataEntrega = pedido.getDataEntrega();

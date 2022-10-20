@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ClienteDTO {
 
+	private Long id;
     private String email;
     private String nomeUsuario;
     private String nomeCompleto;
@@ -25,6 +26,7 @@ public class ClienteDTO {
     private List<Pedido> pedido;
 
     public ClienteDTO(Cliente cliente) {
+    	this.id = cliente.getIdCliente();
         this.email = cliente.getEmail();
         this.nomeUsuario = cliente.getNomeUsuario();
         this.nomeCompleto = cliente.getNomeCompleto();

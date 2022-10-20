@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProdutoDTO {
     
-
+	private Long id;
     private String nome;
     private String descricao;
     private Integer qtdEstoque;
@@ -22,6 +22,7 @@ public class ProdutoDTO {
     private CategoriaDTO categoria;
 
     public ProdutoDTO(Produto produto) {
+    	this.id = produto.getId();
         this.nome = produto.getNome();
         this.descricao = produto.getDescricao();
         this.qtdEstoque = produto.getQtdEstoque();
