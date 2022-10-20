@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ProdutoDTO {
     
 	private Long id;
-    private String nome;
+    private String nomeProduto;
     private String descricao;
     private Integer qtdEstoque;
     private LocalDate dataCadastro;
@@ -23,7 +23,7 @@ public class ProdutoDTO {
 
     public ProdutoDTO(Produto produto) {
     	this.id = produto.getId();
-        this.nome = produto.getNome();
+        this.nomeProduto = produto.getNomeProduto();
         this.descricao = produto.getDescricao();
         this.qtdEstoque = produto.getQtdEstoque();
         this.dataCadastro = produto.getDataCadastro();

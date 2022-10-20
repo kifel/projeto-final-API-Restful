@@ -29,7 +29,8 @@ public class Produto {
 
     @NotBlank(message = "Digite um nome valido para o produto")
     @Size(max = 30)
-    private String nome;
+    @Column(name = "nome_produto")
+    private String nomeProduto;
 
     @NotBlank(message = "Digite um descrição valido para o produto")
     @Size(max = 100)
