@@ -8,17 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.org.serratec.dto.CategoriaDTO;
-import br.org.serratec.dto.ClienteDTO;
-import br.org.serratec.dto.EnderecoDTO;
-import br.org.serratec.dto.ItemPedidoDTO;
 import br.org.serratec.dto.PedidoDTO;
-import br.org.serratec.model.Categoria;
-import br.org.serratec.model.Cliente;
-import br.org.serratec.model.Endereco;
-import br.org.serratec.model.ItemPedido;
 import br.org.serratec.model.Pedido;
-import br.org.serratec.repository.ClienteRepository;
+import br.org.serratec.repository.PedidoRepository;
 
 @Service
 public class PedidoService {
@@ -43,29 +35,30 @@ public class PedidoService {
 		return Optional.of(dto);
 	}
 
-	public PedidoDTO cadastrar(PedidoDTO pedidoDTO) {
-		pedidoDTO.setId(null);
+	public PedidoDTO cadastrar(PedidoInserirDTO pedidoInserirDTO) {
+		pedidoInserirDTO.setId(null);
 		ModelMapper mapper = new ModelMapper();
-		Pedido pedido = mapper.map(pedidoDTO, Pedido.class);
+		Pedido pedido = mapper.map(pedidoInserirDTO, Pedido.class);
 		pedido = repository.save(pedido);
-		pedidoDTO.setId(pedido.getId());
-		return pedidoDTO;
+		pedidoInserirDTO.setId(pedido.getId());
+		return new PedidoDTO(pedido);
 	}
 
-	public PedidoDTO atualizar(Long id, PedidoDTO pedidoDTO) {
-		pedidoDTO.setId(id);
+	public PedidoDTO atualizar(Long id, PedidoInserirDTO pedidoInserirDTO) {
+		pedidoInserirDTO.setId(id);
 		ModelMapper mapper = new ModelMapper();
-		Pedido pedido = mapper.map(pedidoDTO, Pedido.class);
+		Pedido pedido = mapper.map(pedidoInserirDTO, Pedido.class);
 		repository.save(pedido);
-		return pedidoDTO;
+		return new PedidoDTO(pedido);
 	}
 
-	public void apagar(Long id) {
-		Optional<Pedido> pedido = repository.findById(id);
-		if (pedido.isEmpty()) {
-			// Lançar uma exception
+	public Boolean apagar(Long id) {
+		Optional<Pedido> cliente = repository.findById(id);
+		if (cliente.isPresent()) {
+			repository.deleteById(id);
+            return true;
 		}
-		repository.deleteById(id);
+		return false;
 	}
 
 }

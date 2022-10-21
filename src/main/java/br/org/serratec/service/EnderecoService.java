@@ -8,13 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.org.serratec.dto.CategoriaDTO;
-import br.org.serratec.dto.ClienteDTO;
 import br.org.serratec.dto.EnderecoDTO;
-import br.org.serratec.model.Categoria;
-import br.org.serratec.model.Cliente;
 import br.org.serratec.model.Endereco;
-import br.org.serratec.repository.ClienteRepository;
+import br.org.serratec.repository.EnderecoRepository;
 
 @Service
 public class EnderecoService {
@@ -24,9 +20,8 @@ public class EnderecoService {
 
 	public List<EnderecoDTO> listarTodos() {
 		List<Endereco> enderecos = repository.findAll();
-		
-		return enderecos.stream()
-				.map(endereco -> new ModelMapper().map(endereco, EnderecoDTO.class))
+
+		return enderecos.stream().map(endereco -> new ModelMapper().map(endereco, EnderecoDTO.class))
 				.collect(Collectors.toList());
 	}
 
@@ -39,29 +34,30 @@ public class EnderecoService {
 		return Optional.of(dto);
 	}
 
-	public EnderecoDTO cadastrar(EnderecoDTO enderecoDTO) {
-		enderecoDTO.setId(null);
+	public EnderecoDTO cadastrar(EnderecoInserirDTO enderecoInserirDTO) {
+		enderecoInserirDTO.setId(null);
 		ModelMapper mapper = new ModelMapper();
-		Endereco endereco = mapper.map(enderecoDTO, Endereco.class);
+		Endereco endereco = mapper.map(enderecoInserirDTO, Endereco.class);
 		endereco = repository.save(endereco);
-		enderecoDTO.setId(endereco.getId());
-		return enderecoDTO;
+		enderecoInserirDTO.setId(endereco.getId());
+		return new EnderecoDTO(endereco);
 	}
 
-	public EnderecoDTO atualizar(Long id, EnderecoDTO enderecoDTO) {
-		enderecoDTO.setId(id);
+	public EnderecoDTO atualizar(Long id, EnderecoInserirDTO enderecoInserirDTO) {
+		enderecoInserirDTO.setId(id);
 		ModelMapper mapper = new ModelMapper();
-		Endereco endereco = mapper.map(enderecoDTO, Endereco.class);
+		Endereco endereco = mapper.map(enderecoInserirDTO, Endereco.class);
 		repository.save(endereco);
-		return enderecoDTO;
+		return new EnderecoDTO(endereco);
 	}
 
-	public void apagar(Long id) {
-		Optional<Endereco> endereco = repository.findById(id);
-		if (endereco.isEmpty()) {
-			// Lançar uma exception
+	public Boolean apagar(Long id) {
+		Optional<Endereco> cliente = repository.findById(id);
+		if (cliente.isPresent()) {
+			repository.deleteById(id);
+			return true;
 		}
-		repository.deleteById(id);
+		return false;
 	}
 
 }

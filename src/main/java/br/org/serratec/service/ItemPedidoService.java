@@ -8,15 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.org.serratec.dto.CategoriaDTO;
-import br.org.serratec.dto.ClienteDTO;
-import br.org.serratec.dto.EnderecoDTO;
 import br.org.serratec.dto.ItemPedidoDTO;
-import br.org.serratec.model.Categoria;
-import br.org.serratec.model.Cliente;
-import br.org.serratec.model.Endereco;
 import br.org.serratec.model.ItemPedido;
-import br.org.serratec.repository.ClienteRepository;
+import br.org.serratec.repository.ItemPedidoRepository;
 
 @Service
 public class ItemPedidoService {
@@ -41,29 +35,30 @@ public class ItemPedidoService {
 		return Optional.of(dto);
 	}
 
-	public ItemPedidoDTO cadastrar(ItemPedidoDTO itemPedidoDTO) {
-		itemPedidoDTO.setId(null);
+	public ItemPedidoDTO cadastrar(ItemPedidoInserirDTO itemPedidoInserirDTO) {
+		itemPedidoInserirDTO.setId(null);
 		ModelMapper mapper = new ModelMapper();
-		ItemPedido itemPedido = mapper.map(itemPedidoDTO, ItemPedido.class);
+		ItemPedido itemPedido = mapper.map(itemPedidoInserirDTO, ItemPedido.class);
 		itemPedido = repository.save(itemPedido);
-		itemPedidoDTO.setId(itemPedido.getId());
-		return itemPedidoDTO;
+		itemPedidoInserirDTO.setId(itemPedido.getId());
+		return new ItemPedidoDTO(itemPedido);
 	}
 
-	public ItemPedidoDTO atualizar(Long id, ItemPedidoDTO itemPedidoDTO) {
-		itemPedidoDTO.setId(id);
+	public ItemPedidoDTO atualizar(Long id, ItemPedidoInserirDTO itemPedidoInserirDTO) {
+		itemPedidoInserirDTO.setId(id);
 		ModelMapper mapper = new ModelMapper();
-		ItemPedido itemPedido = mapper.map(itemPedidoDTO, ItemPedido.class);
+		ItemPedido itemPedido = mapper.map(itemPedidoInserirDTO, ItemPedido.class);
 		repository.save(itemPedido);
-		return itemPedidoDTO;
+		return new ItemPedidoDTO(itemPedido);
 	}
 
-	public void apagar(Long id) {
-		Optional<ItemPedido> itemPedido = repository.findById(id);
-		if (itemPedido.isEmpty()) {
-			// Lançar uma exception
+	public Boolean apagar(Long id) {
+		Optional<ItemPedido> cliente = repository.findById(id);
+		if (cliente.isPresent()) {
+			repository.deleteById(id);
+            return true;
 		}
-		repository.deleteById(id);
+		return false;
 	}
 
 }
