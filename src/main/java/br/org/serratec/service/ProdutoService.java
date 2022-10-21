@@ -8,11 +8,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.org.serratec.dto.ClienteDTO;
 import br.org.serratec.dto.ProdutoDTO;
-import br.org.serratec.model.Cliente;
 import br.org.serratec.model.Produto;
-import br.org.serratec.repository.ClienteRepository;
+import br.org.serratec.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
@@ -37,29 +35,30 @@ public class ProdutoService {
 		return Optional.of(dto);
 	}
 
-	public ProdutoDTO cadastrar(ProdutoDTO produtoDTO) {
-		produtoDTO.setId(null);
+	public ProdutoDTO cadastrar(ProdutoInserirDTO produtoInserirDTO) {
+		produtoInserirDTO.setId(null);
 		ModelMapper mapper = new ModelMapper();
-		Produto produto = mapper.map(produtoDTO, Produto.class);
+		Produto produto = mapper.map(produtoInserirDTO, Produto.class);
 		produto = repository.save(produto);
-		produtoDTO.setId(produto.getId());
-		return produtoDTO;
+		produtoInserirDTO.setId(produto.getId());
+		return new ProdutoDTO(produto);
 	}
 
-	public ProdutoDTO atualizar(Long id, ProdutoDTO produtoDTO) {
-		produtoDTO.setId(id);
+	public ProdutoDTO atualizar(Long id, ProdutoInserirDTO produtoInserirDTO) {
+		produtoInserirDTO.setId(id);
 		ModelMapper mapper = new ModelMapper();
-		Produto produto = mapper.map(produtoDTO, Produto.class);
+		Produto produto = mapper.map(produtoInserirDTO, Produto.class);
 		repository.save(produto);
-		return produtoDTO;
+		return new ProdutoDTO(produto);
 	}
 
-	public void apagar(Long id) {
-		Optional<Produto> produto = repository.findById(id);
-		if (produto.isEmpty()) {
-			// Lançar uma exception
+	public Boolean apagar(Long id) {
+		Optional<Produto> cliente = repository.findById(id);
+		if (cliente.isPresent()) {
+			repository.deleteById(id);
+            return true;
 		}
-		repository.deleteById(id);
+		return false;
 	}
 
 }

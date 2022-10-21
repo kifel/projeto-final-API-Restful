@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.org.serratec.dto.CategoriaDTO;
-import br.org.serratec.dto.ClienteDTO;
 import br.org.serratec.model.Categoria;
-import br.org.serratec.model.Cliente;
-import br.org.serratec.repository.ClienteRepository;
+import br.org.serratec.repository.CategoriaRepository;
 
 @Service
 public class CategoriaService {
@@ -37,29 +35,30 @@ public class CategoriaService {
 		return Optional.of(dto);
 	}
 
-	public CategoriaDTO cadastrar(CategoriaDTO categoriaDTO) {
-		categoriaDTO.setId(null);
+	public CategoriaDTO cadastrar(CategoriaInserirDTO categoriaInserirDTO) {
+		categoriaInserirDTO.setId(null);
 		ModelMapper mapper = new ModelMapper();
-		Categoria categoria = mapper.map(categoriaDTO, Categoria.class);
+		Categoria categoria = mapper.map(categoriaInserirDTO, Categoria.class);
 		categoria = repository.save(categoria);
-		categoriaDTO.setId(categoria.getIdCategoria());
-		return categoriaDTO;
+		categoriaInserirDTO.setId(categoria.getIdCategoria());
+		return new CategoriaDTO(categoria);
 	}
 
-	public CategoriaDTO atualizar(Long id, CategoriaDTO categoriaDTO) {
-		categoriaDTO.setId(id);
+	public CategoriaDTO atualizar(Long id, CategoriaInserirDTO categoriaInserirDTO) {
+		categoriaInserirDTO.setId(id);
 		ModelMapper mapper = new ModelMapper();
-		Categoria categoria = mapper.map(categoriaDTO, Categoria.class);
+		Categoria categoria = mapper.map(categoriaInserirDTO, Categoria.class);
 		repository.save(categoria);
-		return categoriaDTO;
+		return new CategoriaDTO(categoria);
 	}
 
-	public void apagar(Long id) {
-		Optional<Categoria> categoria = repository.findById(id);
-		if (categoria.isEmpty()) {
-			// Lançar uma exception
+	public Boolean apagar(Long id) {
+		Optional<Categoria> cliente = repository.findById(id);
+		if (cliente.isPresent()) {
+			repository.deleteById(id);
+            return true;
 		}
-		repository.deleteById(id);
+		return false;
 	}
 
 }
