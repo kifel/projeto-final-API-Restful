@@ -53,8 +53,8 @@ public class ItemPedidoService {
 	}
 
 	public Boolean apagar(Long id) {
-		Optional<ItemPedido> cliente = repository.findById(id);
-		if (cliente.isPresent()) {
+		Optional<ItemPedido> itemPedido = repository.findById(id);
+		if (itemPedido.isPresent()) {
 			repository.deleteById(id);
             return true;
 		}

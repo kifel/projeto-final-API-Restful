@@ -1,64 +1,126 @@
 package br.org.serratec.service;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.org.serratec.dto.ProdutoDTO;
+import br.org.serratec.dto.ProdutoInserirDTO;
+import br.org.serratec.model.Categoria;
 import br.org.serratec.model.Produto;
+import br.org.serratec.repository.CategoriaRepository;
 import br.org.serratec.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
 
 	@Autowired
-	private ProdutoRepository repository;
+	private ProdutoRepository produtoRepository;
+
+	@Autowired
+	private CategoriaRepository categoriaRepository;
+
+	public ProdutoDTO inserirUriDaImagem(Produto produto) {
+		URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/produtos/foto/{id}")
+				.buildAndExpand(produto.getId()).toUri();
+
+		ProdutoDTO dto = new ProdutoDTO();
+		dto.setId(produto.getId());
+		dto.setNome(produto.getNome());
+		dto.setDescricao(produto.getDescricao());
+		dto.setDataCadastro(produto.getDataCadastro());
+		dto.setValorUnitario(produto.getValorUnitario());
+		dto.setQtdEstoque(produto.getQtdEstoque());
+		dto.setCategoria(produto.getCategoria());
+		dto.setUri(uri.toString());
+
+		return dto;
+
+	}
 
 	public List<ProdutoDTO> listarTodos() {
-		List<Produto> produtos = repository.findAll();
-		
-		return produtos.stream()
-				.map(produto -> new ModelMapper().map(produto, ProdutoDTO.class))
-				.collect(Collectors.toList());
-	}
+		List<Produto> produtos = produtoRepository.findAll();
+		List<ProdutoDTO> produtoDTO = new ArrayList<>();
 
-	public Optional<ProdutoDTO> listarPorId(Long id) {
-		Optional<Produto> produto = repository.findById(id);
-		if (produto.isEmpty()) {
-			// Lançar uma exception
+		for (Produto produto : produtos) {
+			produtoDTO.add(inserirUriDaImagem(produto));
 		}
-		ProdutoDTO dto = new ModelMapper().map(produto.get(), ProdutoDTO.class);
-		return Optional.of(dto);
+
+		return produtoDTO;
 	}
 
-	public ProdutoDTO cadastrar(ProdutoInserirDTO produtoInserirDTO) {
-		produtoInserirDTO.setId(null);
-		ModelMapper mapper = new ModelMapper();
-		Produto produto = mapper.map(produtoInserirDTO, Produto.class);
-		produto = repository.save(produto);
-		produtoInserirDTO.setId(produto.getId());
-		return new ProdutoDTO(produto);
+	public ProdutoDTO listarPorId(Long id) {
+		Optional<Produto> produto = produtoRepository.findById(id);
+
+		if (!produto.isPresent()) {
+			return null;
+		}
+
+		return inserirUriDaImagem(produto.get());
 	}
 
-	public ProdutoDTO atualizar(Long id, ProdutoInserirDTO produtoInserirDTO) {
-		produtoInserirDTO.setId(id);
-		ModelMapper mapper = new ModelMapper();
-		Produto produto = mapper.map(produtoInserirDTO, Produto.class);
-		repository.save(produto);
-		return new ProdutoDTO(produto);
+	public ProdutoDTO cadastrar(ProdutoInserirDTO produtoDTO, MultipartFile file) throws IOException {
+
+		Optional<Categoria> categoria = categoriaRepository.findById(produtoDTO.getCategoria().getId());
+
+		Produto produto = new Produto();
+		produto.setNome(produtoDTO.getNome());
+		produto.setDescricao(produtoDTO.getDescricao());
+		produto.setQtdEstoque(produtoDTO.getQtdEstoque());
+		produto.setDataCadastro(produtoDTO.getDataCadastro());
+		produto.setValorUnitario(produtoDTO.getValorUnitario());
+		produto.setCategoria(categoria.get());
+		produto.setImagem(file.getBytes());
+
+		produto = produtoRepository.save(produto);
+
+		return inserirUriDaImagem(produto);
+	}
+
+	public ProdutoDTO atualizar(Long id, ProdutoInserirDTO dto, MultipartFile file) throws IOException {
+
+		dto.setId(id);
+		Optional<Categoria> categoria = categoriaRepository.findById(dto.getCategoria().getId());
+
+		Produto produto = new Produto();
+
+		produto.setId(dto.getId());
+		produto.setNome(dto.getNome());
+		produto.setDescricao(dto.getDescricao());
+		produto.setCategoria(categoria.get());
+		produto.setDataCadastro(dto.getDataCadastro());
+		produto.setQtdEstoque(dto.getQtdEstoque());
+		produto.setValorUnitario(dto.getValorUnitario());
+		produto.setImagem(file.getBytes());
+		;
+
+		produto = produtoRepository.save(produto);
+
+		return inserirUriDaImagem(produto);
 	}
 
 	public Boolean apagar(Long id) {
-		Optional<Produto> cliente = repository.findById(id);
-		if (cliente.isPresent()) {
-			repository.deleteById(id);
-            return true;
+		Optional<Produto> produto = produtoRepository.findById(id);
+		if (produto.isPresent()) {
+			produtoRepository.deleteById(id);
+			return true;
 		}
 		return false;
+	}
+
+	public Produto buscarFoto(Long id) {
+		Optional<Produto> produto = produtoRepository.findById(id);
+		if (!produto.isPresent()) {
+			return null;
+		}
+		return produto.get();
 	}
 
 }
