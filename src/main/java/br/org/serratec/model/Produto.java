@@ -10,9 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,13 +26,8 @@ public class Produto {
     @Column(name = "id_produto")
     private Long id;
 
-    @NotBlank(message = "Digite um nome valido para o produto")
-    @Size(max = 30)
-    @Column(name = "nome_produto")
-    private String nomeProduto;
+    private String nome;
 
-    @NotBlank(message = "Digite um descrição valido para o produto")
-    @Size(max = 100)
     private String descricao;
 
     @Column(name = "qtd_estoque")
@@ -42,13 +36,13 @@ public class Produto {
     @Column(name = "data_cadastro")
     private LocalDate dataCadastro;
 
-    @NotNull(message = "Digite um valor valido para o produto")
     @Column(name = "valor_unitario")
     private Double valorUnitario;
 
     @Lob     
     private byte[] imagem;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_categoria")
     private Categoria categoria;
