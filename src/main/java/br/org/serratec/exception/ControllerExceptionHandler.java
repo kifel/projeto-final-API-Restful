@@ -83,7 +83,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         ErroResposta erroR = new ErroResposta();
         
         if (enumValidationException.getMessage().toString() != null) {
-            erroR.setTitulo("Preencha o Status corretamente: PENDENTE, POSTADO, EM_ROTA, ENTREGUE !");
+            erroR.setTitulo("Preencha o Status corretamente: Pendente = 1, Postado = 2, Em rota = 3, Entregue = 4!");
         } else {
 
             erroR.setTitulo("Existem campos inválidos. Confira o preenchimento");
