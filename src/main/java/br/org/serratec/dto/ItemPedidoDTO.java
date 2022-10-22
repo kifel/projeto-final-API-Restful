@@ -10,14 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemPedidoDTO {
 
-	private Long id;
     private Integer quantidade;
     private Integer precoVenda;
     private PedidoDTO pedido;
     private ProdutoDTO produto;
 
     public ItemPedidoDTO(ItemPedido itemPedido) {
-    	this.id = itemPedido.getId();
         this.quantidade = itemPedido.getQuantidade();
         this.precoVenda = itemPedido.getPrecoVenda();
         this.pedido = new PedidoDTO(itemPedido.getPedido());

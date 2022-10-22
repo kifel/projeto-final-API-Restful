@@ -1,12 +1,12 @@
 package br.org.serratec.service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import br.org.serratec.dto.EnderecoDTO;
 import br.org.serratec.model.Endereco;
@@ -15,49 +15,65 @@ import br.org.serratec.repository.EnderecoRepository;
 @Service
 public class EnderecoService {
 
-	@Autowired
-	private EnderecoRepository repository;
+    @Autowired
+    private EnderecoRepository enderecoRepository;
 
-	public List<EnderecoDTO> listarTodos() {
-		List<Endereco> enderecos = repository.findAll();
+    public EnderecoDTO buscar(String cep, String complemento, Integer numero) {
 
-		return enderecos.stream().map(endereco -> new ModelMapper().map(endereco, EnderecoDTO.class))
-				.collect(Collectors.toList());
-	}
+        RestTemplate rs = new RestTemplate();
+        String uri = "http://viacep.com.br/ws/" + cep + "/json";
+        Optional<Endereco> enderecoViaCep = Optional.ofNullable(rs.getForObject(uri, Endereco.class));
 
-	public Optional<EnderecoDTO> listarPorId(Long id) {
-		Optional<Endereco> endereco = repository.findById(id);
-		if (endereco.isEmpty()) {
-			// Lançar uma exception
-		}
-		EnderecoDTO dto = new ModelMapper().map(endereco.get(), EnderecoDTO.class);
-		return Optional.of(dto);
-	}
+        if (enderecoViaCep.get().getCep() != null) {
 
-	public EnderecoDTO cadastrar(EnderecoInserirDTO enderecoInserirDTO) {
-		enderecoInserirDTO.setId(null);
-		ModelMapper mapper = new ModelMapper();
-		Endereco endereco = mapper.map(enderecoInserirDTO, Endereco.class);
-		endereco = repository.save(endereco);
-		enderecoInserirDTO.setId(endereco.getId());
-		return new EnderecoDTO(endereco);
-	}
+            String cepSemTraco = enderecoViaCep.get().getCep().replaceAll("-", "");
+            enderecoViaCep.get().setCep(cepSemTraco);
 
-	public EnderecoDTO atualizar(Long id, EnderecoInserirDTO enderecoInserirDTO) {
-		enderecoInserirDTO.setId(id);
-		ModelMapper mapper = new ModelMapper();
-		Endereco endereco = mapper.map(enderecoInserirDTO, Endereco.class);
-		repository.save(endereco);
-		return new EnderecoDTO(endereco);
-	}
+            enderecoViaCep.get().setComplemento(complemento);
+            enderecoViaCep.get().setNumero(numero);
 
-	public Boolean apagar(Long id) {
-		Optional<Endereco> cliente = repository.findById(id);
-		if (cliente.isPresent()) {
-			repository.deleteById(id);
-			return true;
-		}
-		return false;
-	}
+            return new EnderecoDTO(enderecoViaCep.get());
+        } else {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        }
+    }
 
+    public Endereco salvar(String cep, String complemento, Integer numero) {
+        EnderecoDTO ent = buscar(cep, complemento, numero);
+
+        Endereco endereco = new Endereco();
+        endereco.setBairro(ent.getBairro());
+        endereco.setCep(ent.getCep());
+        endereco.setId(ent.getId());
+        endereco.setLogradouro(ent.getLogradouro());
+        endereco.setLocalidade(ent.getCidade());
+        endereco.setUf(ent.getEstado());
+        endereco.setComplemento(ent.getComplemento());
+        endereco.setNumero(ent.getNumero());
+
+        endereco = enderecoRepository.save(endereco);
+
+        return endereco;
+    }
+
+    public Endereco atualizar(String cep, String complemento, Integer numero, Long id) {
+        EnderecoDTO ent = buscar(cep, complemento, numero);
+
+        ent.setId(id);
+        
+        Endereco endereco = new Endereco();
+        endereco.setId(ent.getId());
+        endereco.setBairro(ent.getBairro());
+        endereco.setCep(ent.getCep());
+        endereco.setId(ent.getId());
+        endereco.setLogradouro(ent.getLogradouro());
+        endereco.setLocalidade(ent.getCidade());
+        endereco.setUf(ent.getEstado());
+        endereco.setComplemento(ent.getComplemento());
+        endereco.setNumero(ent.getNumero());
+
+        endereco = enderecoRepository.save(endereco);
+
+        return endereco;
+    }
 }

@@ -8,15 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CategoriaDTO {
-
+public class ProdutoInserirCategoriaDTO {
+    
     private Long id;
-    private String nome;
-    private String descricao;
 
-    public CategoriaDTO(Categoria categoria) {
+    public ProdutoInserirCategoriaDTO(Categoria categoria) {
         this.id = categoria.getId();
-        this.nome = categoria.getNome();
-        this.descricao = categoria.getDescricao();
-    }
+    } 
 }

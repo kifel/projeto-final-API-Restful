@@ -1,10 +1,11 @@
 package br.org.serratec.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import lombok.Getter;
@@ -17,13 +18,16 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCategoria;
+    @Column(name = "id_categoria")
+    private Long id;
 
+    @NotBlank(message = "Digite um nome para a categoria")
     @Size(max = 30)
-    @NotNull(message = "Insira o nome da categoria.")
-    private String nomeCategoria;
+    private String nome;
 
+    @NotBlank(message = "Digite um descrição para a categoria")
     @Size(max = 150)
-    private String descricaoCategoria;
+    private String descricao;
 
 }
+

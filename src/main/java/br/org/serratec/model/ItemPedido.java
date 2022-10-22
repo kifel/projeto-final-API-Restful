@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +39,7 @@ public class ItemPedido {
     @JoinColumn(name = "id_pedido")
     private Pedido pedido;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_produto")
     private Produto produto;
