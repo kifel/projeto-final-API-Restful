@@ -14,26 +14,26 @@ import lombok.Setter;
 @Entity
 public class Endereco {
 
-    @Id
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_endereco")
 	private Long id;
 
 	private String cep;
 
-    @Column(name = "rua")
+	@Column(name = "rua")
 	private String logradouro;
 
 	private String complemento;
 
 	private String bairro;
 
-    @Column(name = "cidade")
+	@Column(name = "cidade")
 	private String localidade;
 
-    @Column(name = "estado")
+	@Column(name = "estado")
 	private String uf;
 
 	private Integer numero;
-    
+
 }
