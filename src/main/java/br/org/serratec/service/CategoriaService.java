@@ -29,32 +29,36 @@ public class CategoriaService {
 	public Optional<CategoriaDTO> listarPorId(Long id) {
 		Optional<Categoria> categoria = repository.findById(id);
 		if (categoria.isEmpty()) {
-			// Lançar uma exception
+			return null;
 		}
 		CategoriaDTO dto = new ModelMapper().map(categoria.get(), CategoriaDTO.class);
 		return Optional.of(dto);
 	}
 
-	public CategoriaDTO cadastrar(CategoriaInserirDTO categoriaInserirDTO) {
-		categoriaInserirDTO.setId(null);
-		ModelMapper mapper = new ModelMapper();
-		Categoria categoria = mapper.map(categoriaInserirDTO, Categoria.class);
-		categoria = repository.save(categoria);
-		categoriaInserirDTO.setId(categoria.getIdCategoria());
-		return new CategoriaDTO(categoria);
+	public CategoriaDTO cadastrar(Categoria categoria) {
+		categoria.setId(null);
+		Categoria novaCategoria = new Categoria();
+		novaCategoria.setNome(categoria.getNome());
+		novaCategoria.setDescricao(categoria.getDescricao());
+        repository.save(novaCategoria);
+
+		return new CategoriaDTO(novaCategoria);
 	}
 
-	public CategoriaDTO atualizar(Long id, CategoriaInserirDTO categoriaInserirDTO) {
-		categoriaInserirDTO.setId(id);
-		ModelMapper mapper = new ModelMapper();
-		Categoria categoria = mapper.map(categoriaInserirDTO, Categoria.class);
-		repository.save(categoria);
+	public CategoriaDTO atualizar(Long id, Categoria categoria) {
+		categoria.setId(id);
+		Categoria novaCategoria = new Categoria();
+		novaCategoria.setId(categoria.getId());
+		novaCategoria.setNome(categoria.getNome());
+		novaCategoria.setDescricao(categoria.getDescricao());
+        repository.save(novaCategoria);
+		
 		return new CategoriaDTO(categoria);
 	}
 
 	public Boolean apagar(Long id) {
-		Optional<Categoria> cliente = repository.findById(id);
-		if (cliente.isPresent()) {
+		Optional<Categoria> categoria = repository.findById(id);
+		if (categoria.isPresent()) {
 			repository.deleteById(id);
             return true;
 		}

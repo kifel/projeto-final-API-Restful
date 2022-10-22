@@ -65,7 +65,7 @@ public class EnderecoService {
         endereco.setId(ent.getId());
         endereco.setBairro(ent.getBairro());
         endereco.setCep(ent.getCep());
-        endereco.setId(ent.getId());
+        endereco.setId(ent.getId()); // repete na linha 65
         endereco.setLogradouro(ent.getLogradouro());
         endereco.setLocalidade(ent.getCidade());
         endereco.setUf(ent.getEstado());

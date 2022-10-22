@@ -2,7 +2,9 @@ package br.org.serratec.exception;
 
 public class FindIdException extends RuntimeException {
 
-    public FindIdException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public FindIdException(String message) {
         super(message);
     }
 }
