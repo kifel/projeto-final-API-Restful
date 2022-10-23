@@ -2,6 +2,7 @@ package br.org.serratec.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.org.serratec.dto.PedidoDTO;
+import br.org.serratec.dto.PedidoInserirDTO;
 import br.org.serratec.service.PedidoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,8 +54,8 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<PedidoDTO> listarPorId(@PathVariable Long id){
-		PedidoDTO pedidoDTO = service.listarPorId(id);
+	public ResponseEntity<Optional<PedidoDTO>> listarPorId(@PathVariable Long id){
+		Optional<PedidoDTO> pedidoDTO = service.listarPorId(id);
 
 		if (pedidoDTO != null) {
 		    return ResponseEntity.ok(service.listarPorId(id));
@@ -72,7 +74,7 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<PedidoDTO> cadastrar(@RequestBody PedidoDTO pedido) {
+	public ResponseEntity<PedidoDTO> cadastrar(@RequestBody PedidoInserirDTO pedido) {
 		PedidoDTO pedidoDTO = service.cadastrar(pedido);
 		if (pedidoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -95,7 +97,7 @@ public class PedidoController {
 			@ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
-	public ResponseEntity<PedidoDTO> atualizar(@PathVariable Long id, @RequestBody PedidoDTO pedido) {
+	public ResponseEntity<PedidoDTO> atualizar(@PathVariable Long id, @RequestBody PedidoInserirDTO pedido) {
 		PedidoDTO pedidoDTO = service.atualizar(id, pedido);		
         if (pedidoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")

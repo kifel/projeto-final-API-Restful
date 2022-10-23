@@ -2,6 +2,7 @@ package br.org.serratec.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.org.serratec.dto.CategoriaDTO;
+import br.org.serratec.model.Categoria;
 import br.org.serratec.service.CategoriaService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/categorias")
@@ -50,8 +53,8 @@ public class CategoriaController {
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
     @GetMapping("{id}")
-	public ResponseEntity<CategoriaDTO> listarPorId(@PathVariable Long id){
-		CategoriaDTO categoriaDTO = service.listarPorId(id);
+	public ResponseEntity<Optional<CategoriaDTO>> listarPorId(@PathVariable Long id){
+		Optional<CategoriaDTO> categoriaDTO = service.listarPorId(id);
 
         if (categoriaDTO != null) {
 		    return ResponseEntity.ok(service.listarPorId(id));
@@ -70,7 +73,7 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<CategoriaDTO> cadastrar(@RequestBody CategoriaDTO categoria) {
+	public ResponseEntity<CategoriaDTO> cadastrar(@RequestBody Categoria categoria) {
 		CategoriaDTO categoriaDTO = service.cadastrar(categoria);
         if (categoriaDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -92,7 +95,7 @@ public class CategoriaController {
 			@ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
-	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @RequestBody CategoriaDTO categoria) {
+	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
 		CategoriaDTO categoriaDTO = service.atualizar(id, categoria);		
         if (categoriaDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
