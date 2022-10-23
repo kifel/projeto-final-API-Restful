@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,8 +75,8 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<CategoriaDTO> cadastrar(@RequestBody Categoria categoria) {
-		CategoriaDTO categoriaDTO = service.cadastrar(categoria);
+	public ResponseEntity<CategoriaDTO> cadastrar(@Valid @RequestBody Categoria categoria) {
+        CategoriaDTO categoriaDTO = service.cadastrar(categoria);
         if (categoriaDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                     .buildAndExpand(categoriaDTO.getId())
@@ -95,7 +97,7 @@ public class CategoriaController {
 			@ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
-	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
+	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @Valid @RequestBody Categoria categoria) {
 		CategoriaDTO categoriaDTO = service.atualizar(id, categoria);		
         if (categoriaDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")

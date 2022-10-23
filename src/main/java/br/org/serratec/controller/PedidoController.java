@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +76,7 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<PedidoDTO> cadastrar(@RequestBody PedidoInserirDTO pedido) {
+	public ResponseEntity<PedidoDTO> cadastrar(@Valid @RequestBody PedidoInserirDTO pedido) {
 		PedidoDTO pedidoDTO = service.cadastrar(pedido);
 		if (pedidoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -97,7 +99,7 @@ public class PedidoController {
 			@ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
-	public ResponseEntity<PedidoDTO> atualizar(@PathVariable Long id, @RequestBody PedidoInserirDTO pedido) {
+	public ResponseEntity<PedidoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PedidoInserirDTO pedido) {
 		PedidoDTO pedidoDTO = service.atualizar(id, pedido);		
         if (pedidoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
