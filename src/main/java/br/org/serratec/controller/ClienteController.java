@@ -128,14 +128,11 @@ public class ClienteController {
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
 	public ResponseEntity<?> delete(@PathVariable Long id) {
-
 		Boolean response = clienteService.delete(id);
 		if (response != true) {
 			return ResponseEntity.notFound().build();
 		}
 
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
 	}
-
 }

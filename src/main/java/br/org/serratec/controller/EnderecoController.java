@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,103 +16,105 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import br.org.serratec.dto.ProdutoDTO;
-import br.org.serratec.service.ProdutoService;
+import br.org.serratec.dto.EnderecoDTO;
+import br.org.serratec.service.EnderecoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-@RequestMapping("/api/produtos")
-public class ProdutoController {
+@RequestMapping("/enderecos")
+public class EnderecoController {
     
     @Autowired
-    private ProdutoService service;
+    private EnderecoService service;
 
-    @ApiOperation(value = "Lista todos as produtos")
+    @ApiOperation(value = "Lista todos as enderecos")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Retorna todos as produtos"),
+            @ApiResponse(responseCode = "200", description = "Retorna todos as enderecos"),
             @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
-            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "404", description = "Endereco não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<List< ProdutoDTO>> listarTodos(){		
+    @GetMapping
+	public ResponseEntity<List<EnderecoDTO>> listarTodos(){		
 		return ResponseEntity.ok(service.listarTodos());
 	}
 	
-    @ApiOperation(value = "Lista produtos pelo id")
+	@ApiOperation(value = "Lista enderecos pelo id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Retorna produto do id referenciado"),
+            @ApiResponse(responseCode = "200", description = "Retorna endereco do id referenciado"),
             @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
-            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "404", description = "Endereco não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<ProdutoDTO> listarPorId(@PathVariable Long id){
-		ProdutoDTO produtoDTO = service.listarPorId(id);
+    @GetMapping("{id}")
+	public ResponseEntity<EnderecoDTO> listarPorId(@PathVariable Long id){
+		EnderecoDTO enderecoDTO = service.listarPorId(id);
 
-        if (produtoDTO != null) {
+        if (enderecoDTO != null) {
 		    return ResponseEntity.ok(service.listarPorId(id));
         }
 
         return ResponseEntity.notFound().build();
     }
 
-	@PostMapping
-    @ApiOperation(value = "Cadastrado uma nova produto", notes = "preencha com os dados da produto")
+    @PostMapping
+    @ApiOperation(value = "Cadastrado uma nova endereco", notes = "preencha com os dados da endereco")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Retorna o produto cadastrado"),
+            @ApiResponse(responseCode = "201", description = "Retorna o endereco cadastrado"),
             @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
             @ApiResponse(responseCode = "422", description = "Você credencias já cadastradas no banco de dados"),
-            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "404", description = "Endereco não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<ProdutoDTO> cadastrar(@RequestBody  ProdutoDTO  produto) {
-		ProdutoDTO produtoDTO = service.cadastrar(produto);
-        if (produtoDTO != null) {
+	public ResponseEntity<EnderecoDTO> cadastrar(@RequestBody EnderecoDTO endereco) {
+		EnderecoDTO enderecoDTO = service.cadastrar(endereco);
+        if (enderecoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(produtoDTO.getId())
+                    .buildAndExpand(enderecoDTO.getId())
                     .toUri();
-            return ResponseEntity.created(uri).body(produtoDTO);
+            return ResponseEntity.created(uri).body(enderecoDTO);
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
-	@PutMapping("{id}")
-	@ApiOperation(value = "Cadastrado um novo produto", notes = "preencha com os dados do produto")
+    @PutMapping("{id}")
+	@ApiOperation(value = "Cadastrado um novo endereco", notes = "preencha com os dados do endereco")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "Retorna o produto cadastrado"),
+			@ApiResponse(responseCode = "201", description = "Retorna o endereco cadastrado"),
 			@ApiResponse(responseCode = "401", description = "Erro de autenticação"),
 			@ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
 			@ApiResponse(responseCode = "422", description = "Você credencias já cadastradas no banco de dados"),
-			@ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+			@ApiResponse(responseCode = "404", description = "Endereco não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
-	public ResponseEntity<ProdutoDTO> atualizar(@PathVariable Long id, @RequestBody  ProdutoDTO  produto) {
-		ProdutoDTO produtoDTO = service.atualizar(id, produto);		
-        if (produtoDTO != null) {
+	public ResponseEntity<EnderecoDTO> atualizar(@PathVariable Long id, @RequestBody EnderecoDTO endereco) {
+		EnderecoDTO enderecoDTO = service.atualizar(id, endereco);		
+        if (enderecoDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(produtoDTO.getId())
+                    .buildAndExpand(enderecoDTO.getId())
                     .toUri();
-            return ResponseEntity.created(uri).body(produtoDTO);
+            return ResponseEntity.created(uri).body(enderecoDTO);
         } 
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
     @DeleteMapping("{id}")
-    @ApiOperation(value = "Deleta um produto", notes = "preencha com o id do produto")
+    @ApiOperation(value = "Deleta um endereco", notes = "preencha com o id do endereco")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
-            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "404", description = "Endereco não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<?> apagar(@PathVariable Long id){
-		Boolean response = service.apagar(id);
+	public ResponseEntity<EnderecoDTO> apagar(@PathVariable Long id){
+        Boolean response = service.apagar(id);
         if (response != true) {
             return ResponseEntity.notFound().build();
         }
