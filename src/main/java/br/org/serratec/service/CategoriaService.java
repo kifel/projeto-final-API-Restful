@@ -26,17 +26,17 @@ public class CategoriaService {
 				.collect(Collectors.toList());
 	}
 
-	public Optional<CategoriaDTO> listarPorId(Long id) {
-		Optional<Categoria> categoria = repository.findById(id);
-		if (categoria.isEmpty()) {
-			return null;
-		}
-		CategoriaDTO dto = new ModelMapper().map(categoria.get(), CategoriaDTO.class);
-		return Optional.of(dto);
-	}
+	public CategoriaDTO listarPorId(Long id) {
+        Optional<Categoria> categoria = repository.findById(id);
+        if (!categoria.isPresent()) {
+            return null;
+        }
+
+        return new CategoriaDTO(categoria.get());
+    }
 
 	public CategoriaDTO cadastrar(Categoria categoria) {
-		categoria.setId(null);
+
 		Categoria novaCategoria = new Categoria();
 		novaCategoria.setNome(categoria.getNome());
 		novaCategoria.setDescricao(categoria.getDescricao());
