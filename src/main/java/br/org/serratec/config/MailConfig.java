@@ -13,7 +13,7 @@ public class MailConfig {
 
     public void sendEmail(String para, String assunto, String texto) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("joao.pereira51@aluno.senai.br");
+        message.setFrom("grupocincoapi@gmail.com");
         message.setTo(para);
         message.setSubject(assunto);
         message.setText(texto);
