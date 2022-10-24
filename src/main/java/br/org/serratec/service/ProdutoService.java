@@ -2,6 +2,7 @@ package br.org.serratec.service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,106 +22,105 @@ import br.org.serratec.repository.ProdutoRepository;
 @Service
 public class ProdutoService {
 
-	@Autowired
-	private ProdutoRepository produtoRepository;
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
-	@Autowired
-	private CategoriaRepository categoriaRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
-	public ProdutoDTO inserirUriDaImagem(Produto produto) {
-		URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/produtos/foto/{id}")
-				.buildAndExpand(produto.getId()).toUri();
+    public ProdutoDTO inserirUriDaImagem(Produto produto) {
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/produtos/foto/{id}")
+                .buildAndExpand(produto.getId()).toUri();
 
-		ProdutoDTO dto = new ProdutoDTO();
-		dto.setId(produto.getId());
-		dto.setNome(produto.getNome());
-		dto.setDescricao(produto.getDescricao());
-		dto.setDataCadastro(produto.getDataCadastro());
-		dto.setValorUnitario(produto.getValorUnitario());
-		dto.setQtdEstoque(produto.getQtdEstoque());
-		dto.setCategoria(produto.getCategoria());
-		dto.setUri(uri.toString());
+        ProdutoDTO dto = new ProdutoDTO();
+        dto.setId(produto.getId());
+        dto.setNome(produto.getNome());
+        dto.setDescricao(produto.getDescricao());
+        dto.setDataCadastro(produto.getDataCadastro());
+        dto.setValorUnitario(produto.getValorUnitario());
+        dto.setQtdEstoque(produto.getQtdEstoque());
+        dto.setCategoria(produto.getCategoria());
+        dto.setUri(uri.toString());
 
-		return dto;
+        return dto;
+    }
 
-	}
+    public ProdutoDTO inserir(ProdutoInserirDTO produtoDTO, MultipartFile file) throws IOException {
+     
+        Optional<Categoria> cat = categoriaRepository.findById(produtoDTO.getCategoria().getId());
+        
+        Produto produto = new Produto();
+        produto.setNome(produtoDTO.getNome());
+        produto.setDescricao(produtoDTO.getDescricao());
+        produto.setQtdEstoque(produtoDTO.getQtdEstoque());
+        produto.setDataCadastro(LocalDate.now());
+        produto.setValorUnitario(produtoDTO.getValorUnitario());
+        produto.setCategoria(cat.get());
+        produto.setImagem(file.getBytes());
 
-	public List<ProdutoDTO> listarTodos() {
-		List<Produto> produtos = produtoRepository.findAll();
-		List<ProdutoDTO> produtoDTO = new ArrayList<>();
+        produto = produtoRepository.save(produto);
 
-		for (Produto produto : produtos) {
-			produtoDTO.add(inserirUriDaImagem(produto));
-		}
+        return inserirUriDaImagem(produto);
+    }
 
-		return produtoDTO;
-	}
+    public List<ProdutoDTO> listar() {
+        List<Produto> produtos = produtoRepository.findAll();
+        List<ProdutoDTO> produtoDTO = new ArrayList<>();
 
-	public ProdutoDTO listarPorId(Long id) {
-		Optional<Produto> produto = produtoRepository.findById(id);
+        for (Produto produto : produtos) {
+            produtoDTO.add(inserirUriDaImagem(produto));
+        }
 
-		if (!produto.isPresent()) {
-			return null;
-		}
+        return produtoDTO;
+    }
 
-		return inserirUriDaImagem(produto.get());
-	}
+    public ProdutoDTO buscar(Long id) {
+        Optional<Produto> produto = produtoRepository.findById(id);
 
-	public ProdutoDTO cadastrar(ProdutoInserirDTO produtoDTO, MultipartFile file) throws IOException {
+        if (!produto.isPresent()) {
+            return null;
+        }
 
-		Optional<Categoria> categoria = categoriaRepository.findById(produtoDTO.getCategoria().getId());
+        return inserirUriDaImagem(produto.get());
+    }
 
-		Produto produto = new Produto();
-		produto.setNome(produtoDTO.getNome());
-		produto.setDescricao(produtoDTO.getDescricao());
-		produto.setQtdEstoque(produtoDTO.getQtdEstoque());
-		produto.setDataCadastro(produtoDTO.getDataCadastro());
-		produto.setValorUnitario(produtoDTO.getValorUnitario());
-		produto.setCategoria(categoria.get());
-		produto.setImagem(file.getBytes());
+    public ProdutoDTO atualizar(Long id, ProdutoInserirDTO dto, MultipartFile file) throws IOException {
 
-		produto = produtoRepository.save(produto);
+        dto.setId(id);
+        Optional<Categoria> cat = categoriaRepository.findById(dto.getCategoria().getId());
 
-		return inserirUriDaImagem(produto);
-	}
+        Produto produto = new Produto();
 
-	public ProdutoDTO atualizar(Long id, ProdutoInserirDTO dto, MultipartFile file) throws IOException {
+        produto.setId(dto.getId());
+        produto.setNome(dto.getNome());
+        produto.setDescricao(dto.getDescricao());
+        produto.setCategoria(cat.get());
+        produto.setDataCadastro(LocalDate.now());
+        produto.setQtdEstoque(dto.getQtdEstoque());
+        produto.setValorUnitario(dto.getValorUnitario());
+        produto.setImagem(file.getBytes());
 
-		dto.setId(id);
-		Optional<Categoria> categoria = categoriaRepository.findById(dto.getCategoria().getId());
+        produto = produtoRepository.save(produto);
 
-		Produto produto = new Produto();
+        return inserirUriDaImagem(produto);
+    }
 
-		produto.setId(dto.getId());
-		produto.setNome(dto.getNome());
-		produto.setDescricao(dto.getDescricao());
-		produto.setCategoria(categoria.get());
-		produto.setDataCadastro(dto.getDataCadastro());
-		produto.setQtdEstoque(dto.getQtdEstoque());
-		produto.setValorUnitario(dto.getValorUnitario());
-		produto.setImagem(file.getBytes());
-		;
+    public Boolean delete(Long id) {
+        Optional<Produto> produto = produtoRepository.findById(id);
+        if (produto.isPresent()) {
+            produtoRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 
-		produto = produtoRepository.save(produto);
+    public Produto buscarFoto(Long id) {
+        Optional<Produto> produto = produtoRepository.findById(id);
+        if (!produto.isPresent()) {
+            return null;
+        }
 
-		return inserirUriDaImagem(produto);
-	}
-
-	public Boolean apagar(Long id) {
-		Optional<Produto> produto = produtoRepository.findById(id);
-		if (produto.isPresent()) {
-			produtoRepository.deleteById(id);
-			return true;
-		}
-		return false;
-	}
-
-	public Produto buscarFoto(Long id) {
-		Optional<Produto> produto = produtoRepository.findById(id);
-		if (!produto.isPresent()) {
-			return null;
-		}
-		return produto.get();
-	}
-
+        return produto.get();
+    }
+    
 }

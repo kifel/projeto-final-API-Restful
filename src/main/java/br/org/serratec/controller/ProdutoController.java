@@ -46,8 +46,8 @@ public class ProdutoController {
             @ApiResponse(responseCode = "404", description = "produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-    public ResponseEntity<List<ProdutoDTO>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+    public ResponseEntity<List<ProdutoDTO>> listar() {
+        return ResponseEntity.ok(produtoService.listar());
     }
 
     @ApiOperation(value = "Lista produto pelo id")
@@ -59,8 +59,8 @@ public class ProdutoController {
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
     @GetMapping("{id}")
-    public ResponseEntity<ProdutoDTO> listarPorId(@PathVariable Long id) {
-        ProdutoDTO produto = produtoService.listarPorId(id);
+    public ResponseEntity<ProdutoDTO> buscar(@PathVariable Long id) {
+        ProdutoDTO produto = produtoService.buscar(id);
 
         if (produto != null) {
             return ResponseEntity.ok(produto);
@@ -81,11 +81,11 @@ public class ProdutoController {
             @ApiResponse(responseCode = "404", description = "produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-    public ResponseEntity<Object> cadastrar(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<Object> inserir(@RequestParam("file") MultipartFile file,
             @Valid @RequestPart ProdutoInserirDTO produto) throws IOException {
 
         try {
-            ProdutoDTO produtoDTO = produtoService.cadastrar(produto, file);
+            ProdutoDTO produtoDTO = produtoService.inserir(produto, file);
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                     .buildAndExpand(produtoDTO.getId()).toUri();
 
@@ -110,7 +110,7 @@ public class ProdutoController {
     public ResponseEntity<Object> atualizar(@RequestParam("file") MultipartFile file,
             @Valid @RequestPart ProdutoInserirDTO produto, @PathVariable Long id) throws IOException {
 
-        ProdutoDTO p = produtoService.listarPorId(id);
+        ProdutoDTO p = produtoService.buscar(id);
 
         if (p != null) {
             try {
@@ -128,17 +128,17 @@ public class ProdutoController {
     }
 
     @DeleteMapping("{id}")
-    @ApiOperation(value = "Deleta um cliente", notes = "preencha com o id do cliente")
+    @ApiOperation(value = "Deleta um produto", notes = "preencha com o id do produto")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
             @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            @ApiResponse(responseCode = "404", description = "produto não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-    public ResponseEntity<?> apagar(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
 
-        Boolean response = produtoService.apagar(id);
+        Boolean response = produtoService.delete(id);
         System.out.println(response);
         if (response != true) {
             return ResponseEntity.notFound().build();
