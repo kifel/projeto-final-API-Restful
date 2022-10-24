@@ -30,4 +30,3 @@ public class Categoria {
     private String descricao;
 
 }
-

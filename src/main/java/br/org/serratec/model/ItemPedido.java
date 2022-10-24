@@ -8,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -27,14 +25,12 @@ public class ItemPedido {
     @Column(name = "id_item_pedido")
     private Long id;
 
-    @NotNull(message = "Digite uma quantidade valida")
-    @Size(min = 1)
     private Integer quantidade;
 
-    @NotNull(message = "Digite um preço valido")
     @Column(name = "preco_venda")
-    private Integer precoVenda;
+    private Double precoVenda;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_pedido")
     private Pedido pedido;

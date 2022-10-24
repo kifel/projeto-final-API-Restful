@@ -1,8 +1,7 @@
 package br.org.serratec.controller;
 
-import java.net.URI;
+import java.lang.module.FindException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.org.serratec.dto.PedidoDTO;
 import br.org.serratec.dto.PedidoInserirDTO;
@@ -26,15 +24,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-
 @RestController
-@RequestMapping("/api/pedidos")
+@RequestMapping("/pedidos")
 public class PedidoController {
 
     @Autowired
     private PedidoService service;
 
-	@GetMapping
+    @GetMapping
     @ApiOperation(value = "Lista todos os pedidos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retorna todos os pedidos"),
@@ -43,11 +40,11 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<List<PedidoDTO>> listarTodos(){		
-		return ResponseEntity.ok(service.listarTodos());
-	}
-	
-	@GetMapping("{id}")
+    public ResponseEntity<List<PedidoDTO>> listarTodos() {
+        return ResponseEntity.ok(service.listarTodos());
+    }
+
+    @GetMapping("{id}")
     @ApiOperation(value = "Lista pedido pelo id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retorna pedido do id referenciado"),
@@ -56,17 +53,17 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<Optional<PedidoDTO>> listarPorId(@PathVariable Long id){
-		Optional<PedidoDTO> pedidoDTO = service.listarPorId(id);
+    public ResponseEntity<PedidoDTO> listarPorId(@PathVariable Long id) {
+        PedidoDTO pedido = service.listarPorId(id);
 
-		if (pedidoDTO != null) {
-		    return ResponseEntity.ok(service.listarPorId(id));
-		}
+        if (pedido != null) {
+            return ResponseEntity.ok(pedido);
+        }
 
         return ResponseEntity.notFound().build();
-	}
+    }
 
-	@PostMapping
+    @PostMapping
     @ApiOperation(value = "Cadastrado uma nova pedido", notes = "preencha com os dados da pedido")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Retorna o pedido cadastrado"),
@@ -76,40 +73,38 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<PedidoDTO> cadastrar(@Valid @RequestBody PedidoInserirDTO pedido) {
-		PedidoDTO pedidoDTO = service.cadastrar(pedido);
-		if (pedidoDTO != null) {
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(pedidoDTO.getId())
-                    .toUri();
-            return ResponseEntity.created(uri).body(pedidoDTO);
+    public ResponseEntity<Object> cadastrar(@Valid @RequestBody PedidoInserirDTO pedido) {
+        try {
+            PedidoDTO pedidoDTO = service.cadastrar(pedido);
+            return ResponseEntity.ok(pedidoDTO);
+        } catch (FindException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("{id}")
+    @ApiOperation(value = "Cadastrado um novo pedido", notes = "preencha com os dados do pedidos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Retorna o pedido cadastrado"),
+            @ApiResponse(responseCode = "401", description = "Erro de autenticação"),
+            @ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
+            @ApiResponse(responseCode = "422", description = "Você credencias já cadastradas no banco de dados"),
+            @ApiResponse(responseCode = "404", description = "pedido não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro na aplicação")
+    })
+    public ResponseEntity<Object> atualizar(@Valid @RequestBody PedidoInserirDTO pedido, @PathVariable Long id) {
+        PedidoDTO pet = service.listarPorId(id);
+
+        if (pet != null) {
+            try {
+                return ResponseEntity.ok(service.atualizar(id, pedido));
+            } catch (FindException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	}
-	
-
-	@PutMapping("{id}")
-	@ApiOperation(value = "Cadastrado um novo pedido", notes = "preencha com os dados do pedido")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "Retorna o pedido cadastrado"),
-			@ApiResponse(responseCode = "401", description = "Erro de autenticação"),
-			@ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
-			@ApiResponse(responseCode = "422", description = "Você credencias já cadastradas no banco de dados"),
-			@ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
-			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
-	})
-	public ResponseEntity<PedidoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PedidoInserirDTO pedido) {
-		PedidoDTO pedidoDTO = service.atualizar(id, pedido);		
-        if (pedidoDTO != null) {
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(pedidoDTO.getId())
-                    .toUri();
-            return ResponseEntity.created(uri).body(pedidoDTO);
-        } 
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-	}
+        return ResponseEntity.notFound().build();
+    }
 
     @DeleteMapping("{id}")
     @ApiOperation(value = "Deleta um pedido", notes = "preencha com o id do pedido")
@@ -120,12 +115,12 @@ public class PedidoController {
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<?> apagar(@PathVariable Long id){
-		Boolean response = service.apagar(id);
+    public ResponseEntity<?> apagar(@PathVariable Long id) {
+        Boolean response = service.apagar(id);
         if (response != true) {
             return ResponseEntity.notFound().build();
         }
-	
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-	}
+    }
 }

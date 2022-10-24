@@ -2,7 +2,6 @@ package br.org.serratec.controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -33,6 +32,7 @@ public class CategoriaController {
     @Autowired
     private CategoriaService service;
 
+    @GetMapping
     @ApiOperation(value = "Lista todos as categorias")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retorna todos as categorias"),
@@ -41,11 +41,11 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-    @GetMapping
 	public ResponseEntity<List<CategoriaDTO>> listarTodos(){		
 		return ResponseEntity.ok(service.listarTodos());
 	}
 	
+    @GetMapping("{id}")
 	@ApiOperation(value = "Lista categorias pelo id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retorna categoria do id referenciado"),
@@ -54,12 +54,11 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-    @GetMapping("{id}")
-	public ResponseEntity<Optional<CategoriaDTO>> listarPorId(@PathVariable Long id){
-		Optional<CategoriaDTO> categoriaDTO = service.listarPorId(id);
+	public ResponseEntity<CategoriaDTO> listarPorId(@PathVariable Long id) {
+        CategoriaDTO categoria = service.listarPorId(id);
 
-        if (categoriaDTO != null) {
-		    return ResponseEntity.ok(service.listarPorId(id));
+        if (categoria != null) {
+            return ResponseEntity.ok(categoria);
         }
 
         return ResponseEntity.notFound().build();
@@ -75,9 +74,11 @@ public class CategoriaController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro na aplicação")
     })
-	public ResponseEntity<CategoriaDTO> cadastrar(@Valid @RequestBody Categoria categoria) {
+	public ResponseEntity<Object> cadastrar(@Valid @RequestBody Categoria categoria) {
         CategoriaDTO categoriaDTO = service.cadastrar(categoria);
+        
         if (categoriaDTO != null) {
+            
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                     .buildAndExpand(categoriaDTO.getId())
                     .toUri();
@@ -94,7 +95,7 @@ public class CategoriaController {
 			@ApiResponse(responseCode = "401", description = "Erro de autenticação"),
 			@ApiResponse(responseCode = "403", description = "Você não tem permissão para o recurso"),
 			@ApiResponse(responseCode = "422", description = "Você credencias já cadastradas no banco de dados"),
-			@ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+			@ApiResponse(responseCode = "404", description = "Categoria não encontrado"),
 			@ApiResponse(responseCode = "500", description = "Erro na aplicação")
 	})
 	public ResponseEntity<CategoriaDTO> atualizar(@PathVariable Long id, @Valid @RequestBody Categoria categoria) {

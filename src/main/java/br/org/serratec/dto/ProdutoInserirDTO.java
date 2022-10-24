@@ -18,7 +18,7 @@ import lombok.Setter;
 public class ProdutoInserirDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private Long id;
 
     @NotBlank(message = "Digite um nome valido para o produto")
@@ -36,7 +36,7 @@ public class ProdutoInserirDTO implements Serializable {
 
     @NotNull(message = "Digite um valor valido para o produto")
     private Double valorUnitario;
-    
+
     private ProdutoInserirCategoriaDTO categoria;
 
     public ProdutoInserirDTO(Produto produto) {
