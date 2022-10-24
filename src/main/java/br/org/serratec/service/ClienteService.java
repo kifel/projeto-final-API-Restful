@@ -98,7 +98,7 @@ public class ClienteService {
         // Buscando o endereço que vai ser atualizado do cliente
         EnderecoDTO enderecoBuscarId = clientL.getEndereco();
 
-        // verifica no banco de pode ser alterado o nome de usuario
+        // verifica no banco se pode ser alterado o nome de usuario
         if (clienteRepository.findByNomeUsuario(clienteInserirDTO.getNomeUsuario()) != null) {
             if (!clienteRepository.findByNomeUsuario(clienteInserirDTO.getNomeUsuario()).getNomeUsuario()
                     .equals(clientL.getNomeUsuario())) {
@@ -106,7 +106,7 @@ public class ClienteService {
             }
         }
 
-        // verifica no banco de pode ser alterado o email
+        // verifica no banco se pode ser alterado o email
         if (clienteRepository.findByEmail(clienteInserirDTO.getEmail()) != null) {
             if (!clienteRepository.findByEmail(clienteInserirDTO.getEmail()).getEmail().equals(clientL.getEmail())) {
                 throw new EmailException("Email já existe na base");
@@ -123,7 +123,7 @@ public class ClienteService {
             throw new CpfException("CPF não pode ser alterado");
         }
 
-        // Atualizando o endereço do cliente passando o id do endereço que foi achando acima e o dados novos
+        // Atualizando o endereço do cliente passando o id do endereço que foi achado acima e os dados novos
         EnderecoInserirDTO endereco = clienteInserirDTO.getEndereco();
         Endereco enderecoViaCep = enderecoService.atualizar(endereco.getCep(), endereco.getComplemento(),
                 endereco.getNumero(), enderecoBuscarId.getId());
