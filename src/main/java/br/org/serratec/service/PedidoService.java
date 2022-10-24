@@ -1,6 +1,7 @@
 package br.org.serratec.service;
 
 import java.lang.module.FindException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,14 +33,15 @@ public class PedidoService {
 				.collect(Collectors.toList());
 	}
 
-	public Optional<PedidoDTO> listarPorId(Long id) {
-		Optional<Pedido> pedido = pedidoRepository.findById(id);
-		if (pedido.isEmpty()) {
-			return null;
-		}
-		PedidoDTO dto = new ModelMapper().map(pedido.get(), PedidoDTO.class);
-		return Optional.of(dto);
-	}
+	public PedidoDTO listarPorId(Long id) {
+        Optional<Pedido> pedido = pedidoRepository.findById(id);
+        
+        if (!pedido.isPresent()) {
+            return null;
+        }
+
+        return new PedidoDTO(pedido.get());
+    }
 
 	public PedidoDTO cadastrar(PedidoInserirDTO pedido) {
 		Optional<Cliente> cliente = clienteRepository.findById(pedido.getCliente().getId());
@@ -49,7 +51,7 @@ public class PedidoService {
         }
 
 		Pedido novoPedido = new Pedido();
-		novoPedido.setDataPedido(pedido.getDataPedido());
+		novoPedido.setDataPedido(LocalDate.now());
 		novoPedido.setDataEnvio(pedido.getDataEnvio());
 		novoPedido.setDataEntrega(pedido.getDataEntrega());
 		novoPedido.setStatus(pedido.getStatus());
@@ -70,7 +72,7 @@ public class PedidoService {
         
 		Pedido novoPedido = new Pedido();
 		novoPedido.setId(pedido.getId());
-		novoPedido.setDataPedido(pedido.getDataPedido());
+		novoPedido.setDataPedido(LocalDate.now());
 		novoPedido.setDataEnvio(pedido.getDataEnvio());
 		novoPedido.setDataEntrega(pedido.getDataEntrega());
 		novoPedido.setStatus(pedido.getStatus());

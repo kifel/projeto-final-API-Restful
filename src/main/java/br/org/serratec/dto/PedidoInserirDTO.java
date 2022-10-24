@@ -18,9 +18,6 @@ public class PedidoInserirDTO {
     private Long id;
     
     @NotNull(message = "Digite uma data valida")
-    private LocalDate dataPedido;
-
-    @NotNull(message = "Digite uma data valida")
     private LocalDate dataEnvio;
     
     @NotNull(message = "Digite uma data valida")
@@ -33,7 +30,6 @@ public class PedidoInserirDTO {
 
     public PedidoInserirDTO(Pedido pedido) {
         this.id = pedido.getId();
-        this.dataPedido = pedido.getDataPedido();
         this.dataEnvio = pedido.getDataEnvio();
         this.dataEntrega = pedido.getDataEntrega();
         this.status = pedido.getStatus();
