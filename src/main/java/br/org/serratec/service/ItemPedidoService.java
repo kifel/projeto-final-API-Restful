@@ -11,10 +11,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.org.serratec.dto.ItemPedidoDTO;
 import br.org.serratec.dto.ItemPedidoInserirDTO;
-import br.org.serratec.dto.ItemPedidoListarDTO;
 import br.org.serratec.dto.ProdutoItemPedidoListDTO;
-import br.org.serratec.exception.PedidoException;
-import br.org.serratec.exception.ProdutoException;
+import br.org.serratec.exception.PedidoIdException;
+import br.org.serratec.exception.QtdEstoqueException;
 import br.org.serratec.model.ItemPedido;
 import br.org.serratec.model.Pedido;
 import br.org.serratec.model.Produto;
@@ -47,7 +46,7 @@ public class ItemPedidoService {
         produtoUrl.setDataCadastro(produtos.get().getDataCadastro());
         produtoUrl.setDescricao(produtos.get().getDescricao());
         produtoUrl.setNome(produtos.get().getNome());
-        produtoUrl.setQtdEstoque(produtos.get().getQtdEstoque());
+        // produtoUrl.setQtdEstoque(produtos.get().getQtdEstoque());
         produtoUrl.setValorUnitario(produtos.get().getValorUnitario());
         produtoUrl.setLinkImagem(uri.toString());
 
@@ -59,50 +58,44 @@ public class ItemPedidoService {
 
     }
 
-    public List<ItemPedidoListarDTO> listarTodos() {
+    public List<ItemPedidoDTO> listar() {
         List<ItemPedido> items = itemPedidoRepository.findAll();
-        List<ItemPedidoListarDTO> itemDTO = new ArrayList<>();
-
+        List<ItemPedidoDTO> itemDTO = new ArrayList<>();
 
         for (ItemPedido item : items) {
-            
-            itemDTO.add(new ItemPedidoListarDTO(item));
+            itemDTO.add(InserirUrlImagemItem(item));
         }
 
         return itemDTO;
     }
 
-    public ItemPedidoDTO listarPorId(Long id) {
+    public ItemPedidoDTO buscar(Long id) {
         Optional<ItemPedido> itemPedido = itemPedidoRepository.findById(id);
-        System.out.println(itemPedido.get().getPedido().getId());
+
+        ItemPedidoDTO itemPedidoDTO = InserirUrlImagemItem(itemPedido.get());
 
         if (!itemPedido.isPresent()) {
             return null;
         }
 
-        return new ItemPedidoDTO(itemPedido.get());
+        return itemPedidoDTO;
     }
 
-   public ItemPedidoDTO cadastrar(ItemPedidoInserirDTO itemPedido) {
+    public ItemPedidoDTO inserir(ItemPedidoInserirDTO itemPedido) {
+        Optional<Produto> produtosListados = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
+        Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
+        Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
-        if (pedidoRepository.findById(itemPedido.getPedido().getId()) == null) {
-            throw new PedidoException("Pedido não encontrado !");
-        }
-
-        if (produtoRepository.findById(itemPedido.getProduto().getIdProduto()) == null) {
-            throw new ProdutoException("Produto não encontrado !");
+        if (produtos.get().getQtdEstoque() < itemPedido.getQuantidade() || itemPedido.getQuantidade() <= 0) {
+            throw new QtdEstoqueException("Quantidade Invalida !");
         }
 
         Double subTotal = 0.0;
 
-        List<Produto> produtosListados = produtoRepository.findAll();
+        subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
 
-        for (Produto produtos : produtosListados) {
-            subTotal += produtos.getValorUnitario() * produtos.getQtdEstoque();
-        }
-
-        Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
-        Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
+        produtos.get().setQtdEstoque(produtos.get().getQtdEstoque() - itemPedido.getQuantidade());
+        produtoRepository.save(produtos.get());
 
         ItemPedido item = new ItemPedido();
         item.setQuantidade(itemPedido.getQuantidade());
@@ -114,31 +107,54 @@ public class ItemPedidoService {
         return InserirUrlImagemItem(item);
     }
 
-    public ItemPedidoDTO atualizar(ItemPedido itemPedido, Long id) {
+    public ItemPedidoDTO atualizar(ItemPedidoInserirDTO itemPedido, Long id) {
 
         itemPedido.setId(id);
 
-        Double subTotal = 0.0;
+        Optional<ItemPedido> itemPedidos = itemPedidoRepository.findById(id);
+        Optional<Produto> produtosListados = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
+        Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
+        Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
-        List<Produto> produtosListados = produtoRepository.findAll();
-
-        for (Produto produtos : produtosListados) {
-            subTotal += produtos.getValorUnitario() * produtos.getQtdEstoque();
+        if (!itemPedido.getPedido().getId().equals(itemPedidos.get().getPedido().getId())){
+            throw new PedidoIdException("Não é possível alterar o id !");
         }
 
-        System.out.println(subTotal);
+        if (!itemPedido.getQuantidade().equals(itemPedidos.get().getProduto().getQtdEstoque())) {
+            if (itemPedido.getQuantidade() > itemPedidos.get().getProduto().getQtdEstoque()) {
+                if (produtos.get().getQtdEstoque() < itemPedido.getQuantidade() || itemPedido.getQuantidade() <= 0) {
+                    throw new QtdEstoqueException("Quantidade Invalida !");
+                }
+                produtos.get().setQtdEstoque(produtos.get().getQtdEstoque() - itemPedido.getQuantidade());
+            }
+            if (itemPedido.getQuantidade() < produtos.get().getQtdEstoque()) {
+                 
+                Integer produtoQuantidade = produtos.get().getQtdEstoque()  - itemPedido.getQuantidade();
+    
+                System.out.println(produtos.get().getQtdEstoque() + produtoQuantidade);
+    
+                produtos.get().setQtdEstoque(produtoQuantidade);
+            }
+        }
+
+        produtoRepository.save(produtos.get());
+
+        Double subTotal = 0.0;
+
+        subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
 
         ItemPedido item = new ItemPedido();
         item.setId(itemPedido.getId());
         item.setQuantidade(itemPedido.getQuantidade());
         item.setPrecoVenda(subTotal);
-        item.setPedido(itemPedido.getPedido());
-        item.setProduto(itemPedido.getProduto());
+        item.setPedido(pedido.get());
+        item.setProduto(produtos.get());
+        item = itemPedidoRepository.save(item);
 
-        return new ItemPedidoDTO(item);
+        return InserirUrlImagemItem(item);
     }
 
-    public Boolean apagar(Long id) {
+    public Boolean delete(Long id) {
 
         Optional<ItemPedido> itemPedido = itemPedidoRepository.findById(id);
 

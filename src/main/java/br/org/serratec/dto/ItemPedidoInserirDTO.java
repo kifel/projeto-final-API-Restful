@@ -18,7 +18,7 @@ public class ItemPedidoInserirDTO {
     private Integer quantidade;
 
     private ProdutoInserirPedidoDTO pedido;
-
+    
     private ProdutoInserirItemDTO produto;
 
     public ItemPedidoInserirDTO(ItemPedido itemPedido) {

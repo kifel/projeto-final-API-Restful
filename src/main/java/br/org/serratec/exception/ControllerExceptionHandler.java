@@ -3,6 +3,7 @@ package br.org.serratec.exception;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
-    
+
     @ExceptionHandler(EmailException.class)
     public ResponseEntity<Object> handleEmailException(EmailException ex) {
         EmailException emailException = new EmailException(ex.getMessage());
@@ -40,9 +41,19 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(FindIdException.class)
-    public ResponseEntity<Object> FindIdException(FindIdException ex) {
+    public ResponseEntity<Object> handleFindIdException(FindIdException ex) {
         FindIdException findIdException = new FindIdException(ex.getMessage());
         return ResponseEntity.unprocessableEntity().body(findIdException);
+    }
+
+    @ExceptionHandler(QtdEstoqueException.class)
+    public ResponseEntity<Object> handleQtdEstoqueException(QtdEstoqueException ex) {
+        return ResponseEntity.unprocessableEntity().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(PedidoIdException.class)
+    public ResponseEntity<Object> handlePedidoIdExceptionException(PedidoIdException ex) {
+        return ResponseEntity.unprocessableEntity().body(ex.getMessage());
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
@@ -57,7 +68,13 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> DataIntegrityViolationException(DataIntegrityViolationException exc) {
-        return ResponseEntity.unprocessableEntity().body("Impossível deletar: Existe cadastros nesse que usam esse id !");
+        return ResponseEntity.unprocessableEntity()
+                .body("Impossível realizar essa opção, violação de chave estrangeira ou violação no banco de dados !");
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> NoSuchElementException(NoSuchElementException exc) {
+        return ResponseEntity.unprocessableEntity().body("Id não encontrado ou null");
     }
 
     @Override
@@ -78,18 +95,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-        EnumValidationException enumValidationException = new EnumValidationException(ex.getMessage());
-
-        ErroResposta erroR = new ErroResposta();
-        
-        if (enumValidationException.getMessage().toString() != null) {
-            erroR.setTitulo("Preencha o Status corretamente: Pendente = 1, Postado = 2, Em rota = 3, Entregue = 4!");
-        } else {
-
-            erroR.setTitulo("Existem campos inválidos. Confira o preenchimento");
-        }
-
-        ErroResposta erroResposta = new ErroResposta(status.value(), erroR.getTitulo(), LocalDateTime.now(), null);
+        ErroResposta erroResposta = new ErroResposta(status.value(),
+                "Existem campos inválidos. Confira o preenchimento", LocalDateTime.now(), null);
 
         return super.handleExceptionInternal(ex, erroResposta, headers, status, request);
     }

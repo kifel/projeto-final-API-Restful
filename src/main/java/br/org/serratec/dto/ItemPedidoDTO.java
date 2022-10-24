@@ -1,7 +1,8 @@
 package br.org.serratec.dto;
 
+import java.io.Serializable;
+
 import br.org.serratec.model.ItemPedido;
-import br.org.serratec.model.Pedido;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,24 +10,22 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ItemPedidoListarDTO {
+public class ItemPedidoDTO implements Serializable {
 
+    private static final long serialVersionUID = 1L;
 
     private Long id;
-
+    
     private Integer quantidade;
-
+    
     private Double precoVenda;
+    
+    private ProdutoItemPedidoListDTO produto;
 
-    private Pedido pedido;
-
-    private ProdutoDTO produto;
-
-    public ItemPedidoListarDTO(ItemPedido itemPedido) {
+    public ItemPedidoDTO(ItemPedido itemPedido) {
         this.id = itemPedido.getId();
         this.quantidade = itemPedido.getQuantidade();
         this.precoVenda = itemPedido.getPrecoVenda();
-        this.pedido = itemPedido.getPedido();
-        this.produto = new ProdutoDTO(itemPedido.getProduto());
+        this.produto = new ProdutoItemPedidoListDTO(itemPedido.getProduto());
     }
 }
