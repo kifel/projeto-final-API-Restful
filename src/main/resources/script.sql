@@ -13,7 +13,7 @@ CREATE TABLE
 CREATE TABLE
     cliente (
         id_cliente SERIAL PRIMARY KEY,
-        email varchar(30) NOT NULL,
+        email varchar(60) NOT NULL,
         nome_usuario varchar(20) NOT NULL,
         nome_completo varchar(60) NOT NULL,
         senha varchar(255),
@@ -50,7 +50,7 @@ CREATE TABLE
         qtd_estoque INTEGER NOT NULL,
         data_cadastro DATE,
         valor_unitario FLOAT NOT NULL,
-        imagem oid,
+        imagem OID,
         id_categoria INTEGER,
         FOREIGN KEY(id_categoria) REFERENCES categoria(id_categoria)
     );
@@ -59,7 +59,7 @@ CREATE TABLE
     item_pedido (
         id_item_pedido SERIAL PRIMARY KEY,
         quantidade INTEGER NOT NULL,
-        preco_venda INTEGER NOT NULL,
+        preco_venda REAL NOT NULL,
         id_pedido INTEGER,
         FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
         id_produto INTEGER,
