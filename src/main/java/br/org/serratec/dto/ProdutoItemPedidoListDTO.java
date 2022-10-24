@@ -19,7 +19,6 @@ public class ProdutoItemPedidoListDTO implements Serializable {
     private Long id;
     private String nome;
     private String descricao;
-    // private Integer qtdEstoque;
     private LocalDate dataCadastro;
     private Double valorUnitario;
     private Categoria categoria;
@@ -30,7 +29,6 @@ public class ProdutoItemPedidoListDTO implements Serializable {
         this.id = produto.getId();
         this.nome = produto.getNome();
         this.descricao = produto.getDescricao();
-        // this.qtdEstoque = produto.getQtdEstoque();
         this.dataCadastro = produto.getDataCadastro();
         this.valorUnitario = produto.getValorUnitario();
         this.categoria = produto.getCategoria();
