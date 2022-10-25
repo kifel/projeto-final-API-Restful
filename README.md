@@ -33,6 +33,11 @@ O projeto está desenvolvido utilizando as seguintes tecnologias:
 ## ✒️ Autores
 
 * **João Victor de Mello Pereira** - *Desenvolvimento do código* - [KifelG](https://github.com/kifel)
+* **Gabriel Forte** - *Desenvolvimento do código* - [gabeforte](https://github.com/gabeforte)
+* **Luciano Maia** - *Desenvolvimento do código* - [LucianoMaiaJR](https://github.com/LucianoMaiaJR)
+* **Aniello Longobardi** - *Desenvolvimento do código* - [nello0517](https://github.com/nello0517)
+* **Roberto De Andrade** - *Desenvolvimento do código* - [RobertoDeAndrade](https://github.com/RobertoDeAndrade)
+* **Roni Schanuel** - *Professor da APIREST-FULL* - [roni-inf](https://github.com/roni-inf)
 
 --- 
  
