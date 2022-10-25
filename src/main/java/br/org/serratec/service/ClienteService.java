@@ -57,20 +57,26 @@ public class ClienteService {
 
     public ClienteDTO inserir(ClienteInserirDTO c) {
 
+        //NOTE: Verifica se o email já foi utilizado por outro usuario
         if (clienteRepository.findByEmail(c.getEmail()) != null) {
             throw new EmailException("Email já existe na base");
         }
+        //NOTE: Verifica ser o nome de usuario  já foi utilizado por outro usuario
         if (clienteRepository.findByNomeUsuario(c.getNomeUsuario()) != null) {
             throw new NomeUsuarioException("Usuario já existe na base");
         }
+        //NOTE: Verifica se o cpf já foi utilizado em outra conta
         if (clienteRepository.findByCpf(c.getCpf()) != null) {
             throw new CpfException("CPF já cadastrado");
         }
 
+        //NOTE: Recebe o Cep, número da casa e complemento
         EnderecoInserirDTO endereco = c.getEndereco();
+        //NOTE: Utiliza função do Endereço Service para consultar no viaCep retorna o objeto
         Endereco enderecoViaCep = enderecoService.salvar(endereco.getCep(), endereco.getComplemento(),
                 endereco.getNumero());
 
+        //NOTE: Set dados do cliente e salvando no banco de dados
         Cliente cliente = new Cliente();
         cliente.setNomeCompleto(c.getNomeCompleto());
         cliente.setNomeUsuario(c.getNomeUsuario());
@@ -82,7 +88,7 @@ public class ClienteService {
         cliente.setEndereco(enderecoViaCep);
         cliente = clienteRepository.save(cliente);
 
-        // Enviando Email para notificar cadastro
+        //NOTE Enviando Email para notificar cadastro
         mailConfig.sendEmail(c.getEmail(), "Cadastro de Usuário",
                 cliente.toString());
 
@@ -93,12 +99,12 @@ public class ClienteService {
 
         clienteInserirDTO.setId(id);
 
-        // Buscando o cliente que vai ser atualizado
+        //NOTE: Buscando o cliente que vai ser atualizado
         ClienteListDTO clientL = buscar(id);
-        // Buscando o endereço que vai ser atualizado do cliente
+        //NOTE: Buscando o endereço que vai ser atualizado do cliente
         EnderecoDTO enderecoBuscarId = clientL.getEndereco();
 
-        // verifica no banco se pode ser alterado o nome de usuario
+        //NOTE: verifica no banco se pode ser alterado o nome de usuario
         if (clienteRepository.findByNomeUsuario(clienteInserirDTO.getNomeUsuario()) != null) {
             if (!clienteRepository.findByNomeUsuario(clienteInserirDTO.getNomeUsuario()).getNomeUsuario()
                     .equals(clientL.getNomeUsuario())) {
@@ -106,14 +112,14 @@ public class ClienteService {
             }
         }
 
-        // verifica no banco se pode ser alterado o email
+        //NOTE: verifica no banco se pode ser alterado o email
         if (clienteRepository.findByEmail(clienteInserirDTO.getEmail()) != null) {
             if (!clienteRepository.findByEmail(clienteInserirDTO.getEmail()).getEmail().equals(clientL.getEmail())) {
                 throw new EmailException("Email já existe na base");
             }
         }
 
-        // não permite alteração do cpf do cliente
+        //NOTE: não permite alteração do cpf do cliente
         if (clienteRepository.findByCpf(clienteInserirDTO.getCpf()) != null) {
             if (!clienteRepository.findByCpf(clienteInserirDTO.getCpf()).getCpf().equals(clientL.getCpf())) {
                 throw new CpfException("CPF não pode ser alterado");
@@ -123,12 +129,12 @@ public class ClienteService {
             throw new CpfException("CPF não pode ser alterado");
         }
 
-        // Atualizando o endereço do cliente passando o id do endereço que foi achado acima e os dados novos
+        //NOTE: Atualizando o endereço do cliente passando o id do endereço que foi achado acima e os dados novos
         EnderecoInserirDTO endereco = clienteInserirDTO.getEndereco();
         Endereco enderecoViaCep = enderecoService.atualizar(endereco.getCep(), endereco.getComplemento(),
                 endereco.getNumero(), enderecoBuscarId.getId());
 
-        // Cadastrando no banco de dados
+        //NOTE: Cadastrando no banco de dados
         Cliente novoCliente = new Cliente();
         novoCliente.setId(clienteInserirDTO.getId());
         novoCliente.setEmail(clienteInserirDTO.getEmail());
@@ -142,7 +148,7 @@ public class ClienteService {
 
         novoCliente = clienteRepository.save(novoCliente);
 
-        // Enviando Email para notificar a mudança no cadastro
+        //NOTE: Enviando Email para notificar a mudança no cadastro
         mailConfig.sendEmail(clienteInserirDTO.getEmail(), "Atualização de cadastro de Usuário",
                 novoCliente.toString());
 
