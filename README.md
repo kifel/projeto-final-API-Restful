@@ -37,7 +37,7 @@ O projeto está desenvolvido utilizando as seguintes tecnologias:
 * **Luciano Maia** - *Desenvolvimento do código* - [LucianoMaiaJR](https://github.com/LucianoMaiaJR)
 * **Aniello Longobardi** - *Desenvolvimento do código* - [nello0517](https://github.com/nello0517)
 * **Roberto De Andrade** - *Desenvolvimento do código* - [RobertoDeAndrade](https://github.com/RobertoDeAndrade)
-* **Roni Schanuel** - *Professor da APIREST-FULL* - [roni-inf](https://github.com/roni-inf)
+* **Roni Schanuel** - *Professor da API-RESTFULL* - [roni-inf](https://github.com/roni-inf)
 
 --- 
  
