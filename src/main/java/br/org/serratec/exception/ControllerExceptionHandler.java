@@ -52,7 +52,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(PedidoIdException.class)
-    public ResponseEntity<Object> handlePedidoIdExceptionException(PedidoIdException ex) {
+    public ResponseEntity<Object> handlePedidoIdException(PedidoIdException ex) {
+        return ResponseEntity.unprocessableEntity().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProdutoIdException.class)
+    public ResponseEntity<Object> handleProdutoIdException(ProdutoIdException ex) {
         return ResponseEntity.unprocessableEntity().body(ex.getMessage());
     }
 

@@ -85,7 +85,7 @@ public class ItemPedidoService {
     }
 
     public ItemPedidoDTO inserir(ItemPedidoInserirDTO itemPedido) {
-        Optional<Produto> produtosListados = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
+
         Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
@@ -97,7 +97,7 @@ public class ItemPedidoService {
         Double subTotal = 0.0;
 
         //NOTE: faz o subtotal do item pedido, somando a quantidade de produtos de acordo com o seu preço
-        subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
+        subTotal += produtos.get().getValorUnitario() * itemPedido.getQuantidade();
 
         //NOTE: Atualiza a quantidade de estoque do produto
         produtos.get().setQtdEstoque(produtos.get().getQtdEstoque() - itemPedido.getQuantidade());
@@ -120,13 +120,18 @@ public class ItemPedidoService {
         itemPedido.setId(id);
 
         Optional<ItemPedido> itemPedidos = itemPedidoRepository.findById(id);
-        Optional<Produto> produtosListados = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
+        Optional<Produto> produtosAntigo = produtoRepository.findById(id);
         Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
-        //NOTE: Verifica se o id do peido foi alterado, gerando um erro na tentativa
+        //NOTE: Verifica se o id do pedido foi alterado, gerando um erro na tentativa
         if (!itemPedido.getPedido().getId().equals(itemPedidos.get().getPedido().getId())){
-            throw new PedidoIdException("Não é possível alterar o id !");
+            throw new PedidoIdException("Não é possível alterar o id do pedido !");
+        }
+
+        //NOTE: Verifica se o id do produto foi alterado, gerando um erro na tentativa
+        if(!itemPedido.getProduto().getIdProduto().equals(produtosAntigo.get().getId())) {
+            throw new PedidoIdException("Não é possível alterar o id do produto !");
         }
 
         //NOTE: Verifica a quantidade do produto que foi atualizada
@@ -153,7 +158,7 @@ public class ItemPedidoService {
         Double subTotal = 0.0;
 
         //NOTE: faz o subtotal do item pedido, somando a quantidade de produtos de acordo com o seu preço
-        subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
+        subTotal += produtos.get().getValorUnitario() * itemPedido.getQuantidade();
 
         //NOTE: Salva o itemPedido no banco de dados
         ItemPedido item = new ItemPedido();
