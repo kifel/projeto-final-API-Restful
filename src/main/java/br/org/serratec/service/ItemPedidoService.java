@@ -33,6 +33,7 @@ public class ItemPedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    //NOTE: Função que gera o Url da imagem no item pedido
     public ItemPedidoDTO InserirUrlImagemItem(ItemPedido itemPedido) {
 
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getId());
@@ -40,16 +41,18 @@ public class ItemPedidoService {
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/produtos/foto/{id}")
                 .buildAndExpand(produtos.get().getId()).toUri();
 
+        
+        //NOTE: Set de produto
         ProdutoItemPedidoListDTO produtoUrl = new ProdutoItemPedidoListDTO();
         produtoUrl.setId(produtos.get().getId());
         produtoUrl.setCategoria(produtos.get().getCategoria());
         produtoUrl.setDataCadastro(produtos.get().getDataCadastro());
         produtoUrl.setDescricao(produtos.get().getDescricao());
         produtoUrl.setNome(produtos.get().getNome());
-        // produtoUrl.setQtdEstoque(produtos.get().getQtdEstoque());
         produtoUrl.setValorUnitario(produtos.get().getValorUnitario());
         produtoUrl.setLinkImagem(uri.toString());
 
+        //NOTE: Set de ItemPedido
         ItemPedidoDTO itemPedidoDTO = new ItemPedidoDTO(itemPedido);
         itemPedidoDTO.setId(itemPedido.getId());
         itemPedidoDTO.setProduto(produtoUrl);
@@ -86,17 +89,21 @@ public class ItemPedidoService {
         Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
+        //NOTE: Verifica a quantidade disponível de produtos no estoque
         if (produtos.get().getQtdEstoque() < itemPedido.getQuantidade() || itemPedido.getQuantidade() <= 0) {
             throw new QtdEstoqueException("Quantidade Invalida !");
         }
 
         Double subTotal = 0.0;
 
+        //NOTE: faz o subtotal do item pedido, somando a quantidade de produtos de acordo com o seu preço
         subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
 
+        //NOTE: Atualiza a quantidade de estoque do produto
         produtos.get().setQtdEstoque(produtos.get().getQtdEstoque() - itemPedido.getQuantidade());
         produtoRepository.save(produtos.get());
 
+        //NOTE: Salva o itemPedido no banco de dados
         ItemPedido item = new ItemPedido();
         item.setQuantidade(itemPedido.getQuantidade());
         item.setPrecoVenda(subTotal);
@@ -104,6 +111,7 @@ public class ItemPedidoService {
         item.setProduto(produtos.get());
         item = itemPedidoRepository.save(item);
 
+        //NOTE: Retorna na tela o item pedido com a url do produto
         return InserirUrlImagemItem(item);
     }
 
@@ -116,10 +124,12 @@ public class ItemPedidoService {
         Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
 
+        //NOTE: Verifica se o id do peido foi alterado, gerando um erro na tentativa
         if (!itemPedido.getPedido().getId().equals(itemPedidos.get().getPedido().getId())){
             throw new PedidoIdException("Não é possível alterar o id !");
         }
 
+        //NOTE: Verifica a quantidade do produto que foi atualizada
         if (!itemPedido.getQuantidade().equals(itemPedidos.get().getProduto().getQtdEstoque())) {
             if (itemPedido.getQuantidade() > itemPedidos.get().getProduto().getQtdEstoque()) {
                 if (produtos.get().getQtdEstoque() < itemPedido.getQuantidade() || itemPedido.getQuantidade() <= 0) {
@@ -137,12 +147,15 @@ public class ItemPedidoService {
             }
         }
 
+        //NOTE: Salva nova quantidade no banco de dados
         produtoRepository.save(produtos.get());
 
         Double subTotal = 0.0;
 
+        //NOTE: faz o subtotal do item pedido, somando a quantidade de produtos de acordo com o seu preço
         subTotal += produtosListados.get().getValorUnitario() * itemPedido.getQuantidade();
 
+        //NOTE: Salva o itemPedido no banco de dados
         ItemPedido item = new ItemPedido();
         item.setId(itemPedido.getId());
         item.setQuantidade(itemPedido.getQuantidade());
@@ -151,6 +164,7 @@ public class ItemPedidoService {
         item.setProduto(produtos.get());
         item = itemPedidoRepository.save(item);
 
+        //NOTE: Retorna na tela o item pedido com a url do produto
         return InserirUrlImagemItem(item);
     }
 
