@@ -39,6 +39,7 @@ public class PedidoService {
 		return pedidoDTO;
 	}
 
+	@Transactional
 	public PedidoDTO listarPorId(Long id) {
         Optional<Pedido> pedido = pedidoRepository.findById(id);
         
