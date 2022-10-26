@@ -12,7 +12,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import br.org.serratec.dto.ItemPedidoDTO;
 import br.org.serratec.dto.ItemPedidoInserirDTO;
 import br.org.serratec.dto.ProdutoItemPedidoListDTO;
-import br.org.serratec.exception.PedidoIdException;
 import br.org.serratec.exception.QtdEstoqueException;
 import br.org.serratec.model.ItemPedido;
 import br.org.serratec.model.Pedido;
@@ -120,19 +119,8 @@ public class ItemPedidoService {
         itemPedido.setId(id);
 
         Optional<ItemPedido> itemPedidos = itemPedidoRepository.findById(id);
-        Optional<Produto> produtosAntigo = produtoRepository.findById(id);
         Optional<Pedido> pedido = pedidoRepository.findById(itemPedido.getPedido().getId());
         Optional<Produto> produtos = produtoRepository.findById(itemPedido.getProduto().getIdProduto());
-
-        //NOTE: Verifica se o id do pedido foi alterado, gerando um erro na tentativa
-        if (!itemPedido.getPedido().getId().equals(itemPedidos.get().getPedido().getId())){
-            throw new PedidoIdException("Não é possível alterar o id do pedido !");
-        }
-
-        //NOTE: Verifica se o id do produto foi alterado, gerando um erro na tentativa
-        if(!itemPedido.getProduto().getIdProduto().equals(produtosAntigo.get().getId())) {
-            throw new PedidoIdException("Não é possível alterar o id do produto !");
-        }
 
         //NOTE: Verifica a quantidade do produto que foi atualizada
         if (!itemPedido.getQuantidade().equals(itemPedidos.get().getProduto().getQtdEstoque())) {
@@ -145,8 +133,6 @@ public class ItemPedidoService {
             if (itemPedido.getQuantidade() < produtos.get().getQtdEstoque()) {
                  
                 Integer produtoQuantidade = produtos.get().getQtdEstoque()  - itemPedido.getQuantidade();
-    
-                System.out.println(produtos.get().getQtdEstoque() + produtoQuantidade);
     
                 produtos.get().setQtdEstoque(produtoQuantidade);
             }

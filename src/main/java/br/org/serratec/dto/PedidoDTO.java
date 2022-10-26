@@ -22,7 +22,7 @@ public class PedidoDTO {
     private LocalDate dataEntrega;
     private Status status;
     private ClienteListarPedidoDTO cliente;
-    private List<ItemPedido> items = new ArrayList<>();
+    private List<ItemPedido> itens = new ArrayList<>();
     private Double valorTotal;
 
     public PedidoDTO(Pedido pedido) {
@@ -36,7 +36,7 @@ public class PedidoDTO {
         this.valorTotal = pedido.getValorTotal();
 
         for (ItemPedido item : pedido.getItems()) {
-            items.add(item);
+            itens.add(item);
         }
     }
 
