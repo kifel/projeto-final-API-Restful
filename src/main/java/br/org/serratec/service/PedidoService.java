@@ -2,11 +2,12 @@ package br.org.serratec.service;
 
 import java.lang.module.FindException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,16 @@ public class PedidoService {
 	@Autowired
     private ClienteRepository clienteRepository;
 
+	@Transactional
 	public List<PedidoDTO> listarTodos() {
 		List<Pedido> pedidos = pedidoRepository.findAll();
+		List<PedidoDTO> pedidoDTO = new ArrayList<PedidoDTO>();
 
-		return pedidos.stream().map(pedido -> new ModelMapper().map(pedido, PedidoDTO.class))
-				.collect(Collectors.toList());
+		for (Pedido pedido: pedidos) {
+			pedidoDTO.add(new PedidoDTO(pedido));
+		}
+
+		return pedidoDTO;
 	}
 
 	public PedidoDTO listarPorId(Long id) {
